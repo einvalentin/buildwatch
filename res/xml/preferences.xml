@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="@string/config_general" >
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="continously_vibrate"
+            android:title="@string/config_continuously_vibrate" >
+        </CheckBoxPreference>
+    </PreferenceCategory>
+
+    <!-- Configure via barcode -->
+    <PreferenceScreen
+        android:key="scan_qr_code"
+        android:summary="@string/config_via_barcode_summary"
+        android:title="@string/config_via_barcode_title" >
+    </PreferenceScreen>
+
+    <!-- Jenkins -->
+    <PreferenceCategory
+        android:icon="@drawable/jenkins"
+        android:title="@string/config_jenkins_configuration" >
+        <EditTextPreference
+            android:key="jenkins"
+            android:title="@string/config_jenkins_api" />
+        <EditTextPreference
+            android:key="username"
+            android:title="@string/config_jenkins_username" />
+        <EditTextPreference
+            android:key="password"
+            android:title="@string/config_jenkins_password" />
+
+        <MultiSelectListPreference
+            android:key="projects"
+            android:title="@string/config_jenkins_projects" />
+    </PreferenceCategory>
+
+    <!-- GCM -->
+    <PreferenceCategory android:title="@string/config_gcm_configuration" >
+        <EditTextPreference
+            android:title="@string/config_gcm_sender_id"
+            android:summary="@string/config_gcm_sender_summary"
+            android:key="gcm_sender_id" />
+        <EditTextPreference
+            android:enabled="false"
+            android:key="gcm_token"
+            android:title="@string/config_gcm_token" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
