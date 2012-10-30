@@ -15,36 +15,39 @@
         android:summary="@string/config_via_barcode_summary"
         android:title="@string/config_via_barcode_title" >
     </PreferenceScreen>
+    <PreferenceScreen android:title="@string/config_server_configuration" >
 
-    <!-- Jenkins -->
-    <PreferenceCategory
-        android:icon="@drawable/jenkins"
-        android:title="@string/config_jenkins_configuration" >
-        <EditTextPreference
-            android:key="jenkins"
-            android:title="@string/config_jenkins_api" />
-        <EditTextPreference
-            android:key="username"
-            android:title="@string/config_jenkins_username" />
-        <EditTextPreference
-            android:key="password"
-            android:title="@string/config_jenkins_password" />
+        <!-- Jenkins -->
+        <PreferenceCategory
+            android:icon="@drawable/jenkins"
+            android:title="@string/config_jenkins_configuration" >
+            <EditTextPreference
+                android:key="jenkins_base_url"
+                android:title="@string/config_jenkins_base_url" />
+            <EditTextPreference
+                android:key="jenkins_username"
+                android:title="@string/config_jenkins_username" />
+            <EditTextPreference
+                android:key="jenkins_token"
+                android:title="@string/config_jenkins_token"
+                android:dependency="jenkins_username"/>
 
-        <MultiSelectListPreference
-            android:key="projects"
-            android:title="@string/config_jenkins_projects" />
-    </PreferenceCategory>
+            <MultiSelectListPreference
+                android:key="jenkins_projects"
+                android:title="@string/config_jenkins_projects" />
+        </PreferenceCategory>
 
-    <!-- GCM -->
-    <PreferenceCategory android:title="@string/config_gcm_configuration" >
-        <EditTextPreference
-            android:title="@string/config_gcm_sender_id"
-            android:summary="@string/config_gcm_sender_summary"
-            android:key="gcm_sender_id" />
-        <EditTextPreference
-            android:enabled="false"
-            android:key="gcm_token"
-            android:title="@string/config_gcm_token" />
-    </PreferenceCategory>
+        <!-- GCM -->
+        <PreferenceCategory android:title="@string/config_gcm_configuration" >
+            <EditTextPreference
+                android:key="gcm_sender_id"
+                android:title="@string/config_gcm_sender_id" />
+            <EditTextPreference
+                android:enabled="false"
+                android:key="gcm_token"
+                android:title="@string/config_gcm_token"
+                android:dependency="gcm_sender_id" />
+        </PreferenceCategory>
+    </PreferenceScreen>
 
 </PreferenceScreen>

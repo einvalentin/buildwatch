@@ -32,7 +32,7 @@ public class BuildWatchExtensionService extends ExtensionService {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		int retval = super.onStartCommand(intent, flags, startId);
-		if (getString(R.string.action_build_broke).equals(intent.getAction())) {
+		if (getString(R.string.action_jenkins).equals(intent.getAction())) {
 			notifyWatch(intent);
 		}
 		return retval;
@@ -104,7 +104,7 @@ public class BuildWatchExtensionService extends ExtensionService {
 				ContentValues values = new ContentValues();
 				values.put(
 						Registration.ExtensionColumns.CONFIGURATION_ACTIVITY,
-						BuildWatchPreferencesActivity.class.getName());
+						BuildWatchPreferenceActivity.class.getName());
 
 				values.put(Registration.ExtensionColumns.CONFIGURATION_TEXT,
 						getString(R.string.configuration_text));

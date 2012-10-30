@@ -3,9 +3,9 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
-    <!-- Requires API level 8 for C2DM -->
+    <!-- Requires API level 8 for C2DM, level 11 for Fragments -->
     <uses-sdk
-        android:minSdkVersion="8"
+        android:minSdkVersion="11"
         android:targetSdkVersion="15" />
 
     <permission
@@ -38,7 +38,7 @@
 
         <!-- SmartWatch related stuff -->
         <activity
-            android:name=".smartwatch.BuildWatchPreferencesActivity"
+            android:name=".smartwatch.BuildWatchPreferenceActivity"
             android:label="@string/configuration_text" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -60,7 +60,7 @@
                 <action android:name="com.sonyericsson.extras.liveware.aef.notification.REFRESH_REQUEST" />
 
                 <!-- Intents from Jenkins -->
-                <action android:name="com.crowflying.buildwatch.ACTION_BUILD_BROKE" />
+                <action android:name="@string/action_jenkins" />
 
                 <!-- Widget intents -->
                 <action android:name="com.sonyericsson.extras.aef.widget.START_REFRESH_IMAGE_REQUEST" />
@@ -94,11 +94,16 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ConfigurationActivity"
+            android:label="@string/configuration_text" >
         </activity>
 
         <receiver

@@ -5,6 +5,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="lib" path="libs/gcm.jar"/>
-	<classpathentry kind="lib" path="libs/android-integration.jar"/>
+	<classpathentry kind="lib" path="libs/android-integration-honeycomb.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

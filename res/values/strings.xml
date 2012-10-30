@@ -11,22 +11,30 @@
 
     <!-- Configuration -->
     <string name="config_via_barcode_summary">Scan the QR Code right from your jenkins screen to set this up</string>
+    <string name="scan_qr_code">Scan the QR code from your Jenkins page</string>
     <string name="config_via_barcode_title">Auto setup</string>
     <string name="config_general">General Settings</string>
+    <string name="config_server_configuration">Server Configuration</string>
     <string name="config_jenkins_configuration">Jenkins Configuration</string>
     <string name="config_jenkins_username">Username</string>
-    <string name="config_jenkins_password">Password</string>
+    <string name="config_jenkins_username_summary">Using \'%1$s\' to login to jenkins.</string>
+    <string name="config_jenkins_token">API Token</string>
+    <string name="config_jenkins_token_summary">API Token: %1$s</string>
     <string name="config_jenkins_projects">Projects to monitor</string>
-    <string name="config_jenkins_api">URL</string>
+    <string name="config_jenkins_projects_summary">Monitoring %1$d projects.</string>
+    <string name="config_jenkins_base_url">Base URL</string>
+    <string name="config_jenkins_base_url_summary">Connecting to Jenkins @ %1$s.</string>
     <string name="config_gcm_configuration">GCM Configuration</string>
     <string name="config_gcm_token">Token</string>
-    <string name="config_gcm_sender_summary">The GCM Sender ID that you got during the signup with GCM.</string>
+    <string name="config_gcm_token_summary">This devices GCM token: %1$s</string>
     <string name="config_gcm_sender_id">Server Email</string>
+    <string name="config_gcm_sender_id_summary">Using sender id %1$s to obtain the GCM token.</string>
     <string name="config_continuously_vibrate">Contiously vibrate, if you broke the build</string>
 
     <!-- Intents & Extras -->
-    <string name="action_build_broke">com.crowflying.buildwatch.ACTION_BUILD_BROKE</string>
+    <string name="action_jenkins">com.crowflying.buildwatch.ACTION_JENKINS</string>
     <string name="extra_user">com.crowflying.buildwatch.EXTRA_USER</string>
     <string name="extra_project">com.crowflying.buildwatch.EXTRA_PROJECT</string>
+    <string name="extra_status">com.crowflying.buildwatch.EXTRA_STATUS</string>
 
 </resources>
