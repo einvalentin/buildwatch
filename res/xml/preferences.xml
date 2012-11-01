@@ -18,9 +18,7 @@
     <PreferenceScreen android:title="@string/config_server_configuration" >
 
         <!-- Jenkins -->
-        <PreferenceCategory
-            android:icon="@drawable/jenkins"
-            android:title="@string/config_jenkins_configuration" >
+        <PreferenceCategory android:title="@string/config_jenkins_configuration" >
             <EditTextPreference
                 android:key="jenkins_base_url"
                 android:title="@string/config_jenkins_base_url" />
@@ -28,13 +26,9 @@
                 android:key="jenkins_username"
                 android:title="@string/config_jenkins_username" />
             <EditTextPreference
+                android:dependency="jenkins_username"
                 android:key="jenkins_token"
-                android:title="@string/config_jenkins_token"
-                android:dependency="jenkins_username"/>
-
-            <MultiSelectListPreference
-                android:key="jenkins_projects"
-                android:title="@string/config_jenkins_projects" />
+                android:title="@string/config_jenkins_token" />
         </PreferenceCategory>
 
         <!-- GCM -->
@@ -43,11 +37,15 @@
                 android:key="gcm_sender_id"
                 android:title="@string/config_gcm_sender_id" />
             <EditTextPreference
+                android:dependency="gcm_sender_id"
                 android:enabled="false"
                 android:key="gcm_token"
-                android:title="@string/config_gcm_token"
-                android:dependency="gcm_sender_id" />
+                android:title="@string/config_gcm_token" />
         </PreferenceCategory>
     </PreferenceScreen>
+
+    <Preference
+        android:key="forget_settings"
+        android:title="@string/config_forget_settings" />
 
 </PreferenceScreen>

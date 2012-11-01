@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.SQLException;
 import android.util.Log;
 
+import com.sonyericsson.extras.liveware.aef.control.Control;
 import com.sonyericsson.extras.liveware.aef.notification.Notification;
 import com.sonyericsson.extras.liveware.aef.registration.Registration;
 import com.sonyericsson.extras.liveware.extension.util.ExtensionService;
@@ -31,6 +32,7 @@ public class BuildWatchExtensionService extends ExtensionService {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
+		Log.d(LOG_TAG, String.format("Got a jenkins watch command: %s", intent));
 		int retval = super.onStartCommand(intent, flags, startId);
 		if (getString(R.string.action_jenkins).equals(intent.getAction())) {
 			notifyWatch(intent);
@@ -39,17 +41,22 @@ public class BuildWatchExtensionService extends ExtensionService {
 	}
 
 	private void notifyWatch(Intent intent) {
-		String username = intent.getStringExtra(getString(R.string.extra_user));
-		String project = intent
-				.getStringExtra(getString(R.string.extra_project));
+		String message = intent
+				.getStringExtra(getString(R.string.extra_message));
+		boolean iBrokeTheBuild = intent.getBooleanExtra(
+				getString(R.string.extra_ifuckedup), false);
+		String fullName = intent
+				.getStringExtra(getString(R.string.extra_fullname));
+
 		ContentValues eventValues = new ContentValues();
 		eventValues.put(Notification.EventColumns.EVENT_READ_STATUS, false);
-		eventValues.put(Notification.EventColumns.DISPLAY_NAME, username);
-		eventValues.put(Notification.EventColumns.MESSAGE, String.format(
-				getString(R.string.fmt_build_fail_message), username, project));
-		// TODO: if someone else broke the build, this should be different.
-		int iBrokeTheBuild = 1;
-		eventValues.put(Notification.EventColumns.PERSONAL, iBrokeTheBuild);
+		eventValues.put(Notification.EventColumns.PROFILE_IMAGE_URI, ExtensionUtils
+				.getUriString(getApplicationContext(),
+						R.drawable.bg_build_success));
+		eventValues.put(Notification.EventColumns.DISPLAY_NAME, fullName);
+		eventValues.put(Notification.EventColumns.MESSAGE, message);
+		eventValues.put(Notification.EventColumns.PERSONAL, iBrokeTheBuild ? 1
+				: 0);
 		eventValues.put(Notification.EventColumns.PUBLISHED_TIME,
 				System.currentTimeMillis());
 		eventValues.put(Notification.EventColumns.SOURCE_ID, NotificationUtil
@@ -67,7 +74,6 @@ public class BuildWatchExtensionService extends ExtensionService {
 		} catch (SQLException e) {
 			Log.e(LOG_TAG, "Failed to insert event", e);
 		}
-
 	}
 
 	@Override
@@ -133,7 +139,10 @@ public class BuildWatchExtensionService extends ExtensionService {
 				values.put(Notification.SourceColumns.ENABLED, true);
 				values.put(Notification.SourceColumns.ICON_URI_1,
 						ExtensionUtils.getUriString(getApplicationContext(),
-								R.drawable.ic_buildwatch));
+								R.drawable.jenkins_30x30));
+				values.put(Notification.SourceColumns.ICON_URI_2,
+						ExtensionUtils.getUriString(getApplicationContext(),
+								R.drawable.jenkins_18x18));
 				values.put(Notification.SourceColumns.NAME,
 						getString(R.string.jenkins));
 				values.put(Notification.SourceColumns.EXTENSION_SPECIFIC_ID,

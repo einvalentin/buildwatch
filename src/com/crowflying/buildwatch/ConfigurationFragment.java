@@ -2,7 +2,6 @@ package com.crowflying.buildwatch;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.TreeSet;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,9 +17,13 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.preference.PreferenceScreen;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import com.google.android.gcm.GCMRegistrar;
 import com.google.zxing.integration.android.IntentIntegratorV30;
@@ -28,6 +31,7 @@ import com.google.zxing.integration.android.IntentIntegratorV30;
 public class ConfigurationFragment extends PreferenceFragment implements
 		OnPreferenceClickListener, OnSharedPreferenceChangeListener {
 	public static final String PREFS_AUTOSETUP = "scan_qr_code";
+	public static final String PREFS_FORGET_SETTINGS = "forget_settings";
 	public static final String PREFS_KEY_GCM_TOKEN = "gcm_token";
 	public static final String PREFS_KEY_GCM_SENDER_ID = "gcm_sender_id";
 	public static final String PREFS_KEY_JENKINS_URL = "jenkins_base_url";
@@ -41,9 +45,7 @@ public class ConfigurationFragment extends PreferenceFragment implements
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
 		Log.d(LOG_TAG, String.format("Pref %s just changed..", key));
-		// This is obviously suboptimal from a performance point of view, but I
-		// was too lazy to type the extra checks to make sure only the right
-		// summary is updated.
+		// This is obviously suboptimal from a performance point of view.
 		refreshSummaries();
 		// If you change the GCM sender id, we want to fetch a new Auth token
 		// for you...
@@ -51,6 +53,14 @@ public class ConfigurationFragment extends PreferenceFragment implements
 			new GetCloudDeviceMessagingToken().execute(sharedPreferences
 					.getString(key, null));
 		}
+	}
+
+	@Override
+	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen,
+			Preference preference) {
+		Log.d(LOG_TAG, String.format("onPreferenceTreeClick(%s,%s)",
+				preferenceScreen, preference));
+		return super.onPreferenceTreeClick(preferenceScreen, preference);
 	}
 
 	@Override
@@ -63,6 +73,12 @@ public class ConfigurationFragment extends PreferenceFragment implements
 			integrator.initiateScan();
 			return true;
 		}
+		if (PREFS_FORGET_SETTINGS.equals(preference.getKey())) {
+			Log.d(LOG_TAG, "Forgetting all settings");
+			PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
+					.clear().commit();
+			return true;
+		}
 		return false;
 	};
 
@@ -71,6 +87,25 @@ public class ConfigurationFragment extends PreferenceFragment implements
 		super.onCreate(savedInstanceState);
 		Log.d(LOG_TAG, "onCreate()");
 		addPreferencesFromResource(R.xml.preferences);
+		setHasOptionsMenu(true);
+	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		Log.d(LOG_TAG, "onCreateOptionsMenu...");
+		menu.add(getString(R.string.menu_request_new_token));
+		super.onCreateOptionsMenu(menu, inflater);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (getString(R.string.menu_request_new_token).equals(item.getTitle())) {
+			new GetCloudDeviceMessagingToken().execute(getPreferenceScreen()
+					.getSharedPreferences().getString(PREFS_KEY_GCM_SENDER_ID,
+							""));
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -83,8 +118,16 @@ public class ConfigurationFragment extends PreferenceFragment implements
 				.registerOnSharedPreferenceChangeListener(this);
 		getPreferenceScreen().findPreference(PREFS_AUTOSETUP)
 				.setOnPreferenceClickListener(this);
+		getPreferenceManager().findPreference(PREFS_FORGET_SETTINGS)
+				.setOnPreferenceClickListener(this);
 	}
 
+	/**
+	 * Refresh the summaries of the prefs. This is done in one single hunk for
+	 * all prefs which is suboptimal from a performance point of view, but is
+	 * less code to write. To optimize, only refresh summaries on the settings
+	 * that actually changed.
+	 */
 	private void refreshSummaries() {
 		long t1 = System.currentTimeMillis();
 		List<Pair<String, Integer>> setSummaryTextPrefs = new LinkedList<Pair<String, Integer>>();
@@ -102,24 +145,12 @@ public class ConfigurationFragment extends PreferenceFragment implements
 		setSummaryTextPrefs.add(new Pair<String, Integer>(
 				PREFS_KEY_JENKINS_USERNAME,
 				R.string.config_jenkins_username_summary));
-
-		List<Pair<String, Integer>> setSummaryListPrefs = new LinkedList<Pair<String, Integer>>();
-		setSummaryListPrefs.add(new Pair<String, Integer>(
-				PREFS_KEY_JENKINS_PROJECTS,
-				R.string.config_jenkins_projects_summary));
 		SharedPreferences prefs = getPreferenceScreen().getSharedPreferences();
 
 		for (Pair<String, Integer> p : setSummaryTextPrefs) {
 			findPreference(p.first).setSummary(
 					String.format(getString(p.second),
 							prefs.getString(p.first, "")));
-		}
-
-		for (Pair<String, Integer> p : setSummaryListPrefs) {
-			findPreference(p.first).setSummary(
-					String.format(getString(p.second),
-							prefs.getStringSet(p.first, new TreeSet<String>())
-									.size()));
 		}
 
 		Log.i(LOG_TAG, String.format(
@@ -148,7 +179,8 @@ public class ConfigurationFragment extends PreferenceFragment implements
 	}
 
 	/**
-	 * Parse JSON config in the background.
+	 * Parse JSON config in the background and also insert them into the
+	 * SharedPrefs.
 	 * 
 	 */
 
@@ -157,7 +189,14 @@ public class ConfigurationFragment extends PreferenceFragment implements
 		@Override
 		protected Boolean doInBackground(Intent... data) {
 			try {
-				return autoconfigureFromCode(data[0]);
+				boolean configWorked = autoconfigureFromCode(data[0]);
+				if (configWorked) {
+					new GetCloudDeviceMessagingToken()
+							.execute(getPreferenceScreen()
+									.getSharedPreferences().getString(
+											PREFS_KEY_GCM_SENDER_ID, ""));
+				}
+				return configWorked;
 			} catch (JSONException e) {
 				Log.e(LOG_TAG, String.format(
 						"Result from QR code was not parsable: %s", e));
@@ -202,7 +241,7 @@ public class ConfigurationFragment extends PreferenceFragment implements
 			Log.i(LOG_TAG, String.format(
 					"Stored %s configuration values from the QR code in %s ms",
 					counter, (System.currentTimeMillis() - t1)));
-			
+
 			// return true, if we changed at least one Setting.
 			return counter > 0;
 		}

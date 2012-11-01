@@ -4,37 +4,41 @@
     <string name="configuration_text">Configuration</string>
     <string name="jenkins">Jenkins</string>
     <string name="fmt_build_fail_message">%1$s just broke the %2$s build.</string>
+    <string name="fmt_build_fail_message">%1$s just broke the %2$s build.</string>
+    <string name="fmt_build_success_message">%1$s was just built successfully.</string>
 
     <!-- GCM -->
     <string name="fmt_gcm_error">Error obtaining a GCM token: %1$s.</string>
     <string name="new_token">Got new GCM token</string>
+    <string name="fmt_unregistering_failed">Unregistering from jenkins failed: %1$s.</string>
+	<string name="fmt_registering_failed">Registering token in jenkins failed: %1$s.</string>
 
     <!-- Configuration -->
+    <string name="menu_request_new_token">Request new GCM token</string>
     <string name="config_via_barcode_summary">Scan the QR Code right from your jenkins screen to set this up</string>
     <string name="scan_qr_code">Scan the QR code from your Jenkins page</string>
     <string name="config_via_barcode_title">Auto setup</string>
+    <string name="config_forget_settings">Forget Configuration</string>
     <string name="config_general">General Settings</string>
     <string name="config_server_configuration">Server Configuration</string>
     <string name="config_jenkins_configuration">Jenkins Configuration</string>
     <string name="config_jenkins_username">Username</string>
     <string name="config_jenkins_username_summary">Using \'%1$s\' to login to jenkins.</string>
-    <string name="config_jenkins_token">API Token</string>
+    <string name="config_jenkins_token">Jenkins API Token</string>
     <string name="config_jenkins_token_summary">API Token: %1$s</string>
-    <string name="config_jenkins_projects">Projects to monitor</string>
-    <string name="config_jenkins_projects_summary">Monitoring %1$d projects.</string>
     <string name="config_jenkins_base_url">Base URL</string>
     <string name="config_jenkins_base_url_summary">Connecting to Jenkins @ %1$s.</string>
-    <string name="config_gcm_configuration">GCM Configuration</string>
-    <string name="config_gcm_token">Token</string>
+    <string name="config_gcm_configuration">Google Cloud Messaging Configuration</string>
+    <string name="config_gcm_token">GCM RegID</string>
     <string name="config_gcm_token_summary">This devices GCM token: %1$s</string>
-    <string name="config_gcm_sender_id">Server Email</string>
-    <string name="config_gcm_sender_id_summary">Using sender id %1$s to obtain the GCM token.</string>
-    <string name="config_continuously_vibrate">Contiously vibrate, if you broke the build</string>
+    <string name="config_gcm_sender_id">GCM SenderID</string>
+    <string name="config_gcm_sender_id_summary">Using Project Nr %1$s (find on API Console)</string>
+    <string name="config_continuously_vibrate">Continuously vibrate, if I broke the build</string>
 
     <!-- Intents & Extras -->
     <string name="action_jenkins">com.crowflying.buildwatch.ACTION_JENKINS</string>
-    <string name="extra_user">com.crowflying.buildwatch.EXTRA_USER</string>
-    <string name="extra_project">com.crowflying.buildwatch.EXTRA_PROJECT</string>
-    <string name="extra_status">com.crowflying.buildwatch.EXTRA_STATUS</string>
+    <string name="extra_message">com.crowflying.buildwatch.EXTRA_MESSAGE</string>
+    <string name="extra_ifuckedup">com.crowflying.buildwatch.EXTRA_IFUCKEDUP</string>
+    <string name="extra_fullname">com.crowflying.buildwatch.EXTRA_USER</string>
 
 </resources>
