@@ -35,10 +35,13 @@
     <string name="config_gcm_sender_id_summary">Using Project Nr %1$s (find on API Console)</string>
     <string name="config_continuously_vibrate">Continuously vibrate, if I broke the build</string>
 
+    <!-- SmartExtension -->
+    <string name="show_in_browser">Show on device</string>
+
     <!-- Intents & Extras -->
     <string name="action_jenkins">com.crowflying.buildwatch.ACTION_JENKINS</string>
     <string name="extra_message">com.crowflying.buildwatch.EXTRA_MESSAGE</string>
     <string name="extra_ifuckedup">com.crowflying.buildwatch.EXTRA_IFUCKEDUP</string>
     <string name="extra_fullname">com.crowflying.buildwatch.EXTRA_USER</string>
-
+    <string name="extra_build_url">com.crowflying.buildwatch.EXTRA_BUILD_URL</string>
 </resources>

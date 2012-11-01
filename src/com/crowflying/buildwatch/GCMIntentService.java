@@ -4,6 +4,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.content.Context;
 import android.content.Intent;
@@ -148,13 +150,16 @@ public class GCMIntentService extends GCMBaseIntentService {
 				String.format("GCM message received: %s", gcm.getAction()));
 		// Format the string.
 		Intent jenkins = new Intent(context.getString(R.string.action_jenkins));
-		jenkins.putExtra(getString(R.string.extra_message), gcm.getStringExtra(GCM_KEY_MESSAGE));
+		String message = gcm.getStringExtra(GCM_KEY_MESSAGE);
+		jenkins.putExtra(getString(R.string.extra_message), message);
 		jenkins.putExtra(getString(R.string.extra_ifuckedup), didIDoIt(gcm));
+		jenkins.putExtra(getString(R.string.extra_build_url),
+				parseBuildUrl(gcm, message));
 		context.startService(jenkins);
 	}
 
 	/**
-	 * Determine if the current user caused this event... 
+	 * Determine if the current user caused this event...
 	 * 
 	 * @param intent
 	 * @return
@@ -174,5 +179,23 @@ public class GCMIntentService extends GCMBaseIntentService {
 				"Checking if I (%s) am among the comitters (%s): %s", username,
 				comitters, res));
 		return res;
+	}
+
+	private String parseBuildUrl(Intent intent, String message) {
+		// Worst regexp evar...
+		Pattern pattern = Pattern.compile("(http.*)");
+		Matcher matcher = pattern.matcher(message);
+		Log.d(LOG_TAG, " Group count: " + matcher.groupCount() + " msg: "
+				+ message);
+		if (matcher.find()) {
+			String match = matcher.group(0);
+			Log.d(LOG_TAG, " matched: " + match);
+			return match;
+		}
+
+		String jenkinsBaseUrl = PreferenceManager.getDefaultSharedPreferences(
+				this)
+				.getString(ConfigurationFragment.PREFS_KEY_JENKINS_URL, "");
+		return jenkinsBaseUrl;
 	}
 }

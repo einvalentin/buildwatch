@@ -2,10 +2,12 @@ package com.crowflying.buildwatch.smartwatch;
 
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.SQLException;
+import android.net.Uri;
 import android.util.Log;
 
-import com.sonyericsson.extras.liveware.aef.control.Control;
+import com.crowflying.buildwatch.utils.IntentUtils;
 import com.sonyericsson.extras.liveware.aef.notification.Notification;
 import com.sonyericsson.extras.liveware.aef.registration.Registration;
 import com.sonyericsson.extras.liveware.extension.util.ExtensionService;
@@ -50,13 +52,17 @@ public class BuildWatchExtensionService extends ExtensionService {
 
 		ContentValues eventValues = new ContentValues();
 		eventValues.put(Notification.EventColumns.EVENT_READ_STATUS, false);
-		eventValues.put(Notification.EventColumns.PROFILE_IMAGE_URI, ExtensionUtils
-				.getUriString(getApplicationContext(),
+		// TODO: Make the image depend on the result of the build.
+		eventValues.put(Notification.EventColumns.PROFILE_IMAGE_URI,
+				ExtensionUtils.getUriString(getApplicationContext(),
 						R.drawable.bg_build_success));
 		eventValues.put(Notification.EventColumns.DISPLAY_NAME, fullName);
 		eventValues.put(Notification.EventColumns.MESSAGE, message);
 		eventValues.put(Notification.EventColumns.PERSONAL, iBrokeTheBuild ? 1
 				: 0);
+		// my good friend, the url...
+		eventValues.put(Notification.EventColumns.FRIEND_KEY,
+				intent.getStringExtra(getString(R.string.extra_build_url)));
 		eventValues.put(Notification.EventColumns.PUBLISHED_TIME,
 				System.currentTimeMillis());
 		eventValues.put(Notification.EventColumns.SOURCE_ID, NotificationUtil
@@ -73,6 +79,24 @@ public class BuildWatchExtensionService extends ExtensionService {
 					e);
 		} catch (SQLException e) {
 			Log.e(LOG_TAG, "Failed to insert event", e);
+		}
+	}
+
+	@Override
+	protected void onViewEvent(Intent intent) {
+		IntentUtils.printIntentExtras(intent);
+		int eventId = intent.getIntExtra(Notification.Intents.EXTRA_EVENT_ID,
+				-1);
+		Cursor cursor = getContentResolver().query(Notification.Event.URI,
+				null, Notification.EventColumns._ID + " = ?",
+				new String[] { "" + eventId }, null);
+		if (cursor != null && cursor.moveToFirst()) {
+			String url = cursor.getString(cursor
+					.getColumnIndex(Notification.EventColumns.FRIEND_KEY));
+			Intent browse = new Intent(Intent.ACTION_VIEW);
+			browse.setData(Uri.parse(url));
+			browse.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			startActivity(browse);
 		}
 	}
 
@@ -143,6 +167,8 @@ public class BuildWatchExtensionService extends ExtensionService {
 				values.put(Notification.SourceColumns.ICON_URI_2,
 						ExtensionUtils.getUriString(getApplicationContext(),
 								R.drawable.jenkins_18x18));
+				values.put(Notification.SourceColumns.ACTION_1,
+						getString(R.string.show_in_browser));
 				values.put(Notification.SourceColumns.NAME,
 						getString(R.string.jenkins));
 				values.put(Notification.SourceColumns.EXTENSION_SPECIFIC_ID,
