@@ -39,20 +39,26 @@
         <!-- SmartWatch related stuff -->
         <activity
             android:name=".smartwatch.BuildWatchPreferenceActivity"
+            android:exported="false"
             android:label="@string/configuration_text" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
 
-        <service android:name=".smartwatch.BuildWatchExtensionService" >
+        <service
+            android:name=".smartwatch.BuildWatchExtensionService"
+            android:exported="false" >
             <intent-filter>
+
                 <!-- Intents from Jenkins -->
                 <action android:name="com.crowflying.buildwatch.ACTION_JENKINS" />
             </intent-filter>
         </service>
 
-        <receiver android:name=".smartwatch.ExtensionReceiver" >
+        <receiver
+            android:name=".smartwatch.ExtensionReceiver"
+            android:exported="false" >
             <intent-filter>
 
                 <!-- Generic extension intents. -->
@@ -84,6 +90,7 @@
         <activity
             android:name="com.google.zxing.client.android.CaptureActivity"
             android:configChanges="orientation|keyboardHidden"
+            android:exported="false"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:windowSoftInputMode="stateAlwaysHidden" >
@@ -95,6 +102,7 @@
         </activity>
         <activity
             android:name=".MainActivity"
+            android:exported="false"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -104,11 +112,13 @@
         </activity>
         <activity
             android:name=".ConfigurationActivity"
+            android:exported="false"
             android:label="@string/configuration_text" >
         </activity>
 
         <receiver
             android:name="com.google.android.gcm.GCMBroadcastReceiver"
+            android:exported="false"
             android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
@@ -118,7 +128,9 @@
             </intent-filter>
         </receiver>
 
-        <service android:name=".GCMIntentService" />
+        <service
+            android:name=".GCMIntentService"
+            android:exported="false" />
     </application>
 
 </manifest>

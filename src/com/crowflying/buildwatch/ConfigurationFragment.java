@@ -1,3 +1,19 @@
+/*
+ * Copyright 2012 Valentin v. Seggern
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.crowflying.buildwatch;
 
 import java.util.LinkedList;
@@ -69,7 +85,7 @@ public class ConfigurationFragment extends PreferenceFragment implements
 		if (PREFS_AUTOSETUP.equals(preference.getKey())) {
 			Log.d(LOG_TAG, "Calling XZING.");
 			IntentIntegratorV30 integrator = new IntentIntegratorV30(this);
-			integrator.setMessage(getString(R.string.scan_qr_code));
+			integrator.setMessageByID(R.string.barcode_scanner_not_installed_message);
 			integrator.initiateScan();
 			return true;
 		}
@@ -308,8 +324,6 @@ public class ConfigurationFragment extends PreferenceFragment implements
 					"Trying to request a new gcm token for sender_id: %s",
 					senderId));
 			GCMRegistrar.checkDevice(getActivity());
-			// TODO: Remove - this is only necessary in development.
-			GCMRegistrar.checkManifest(getActivity());
 			final String regId = GCMRegistrar.getRegistrationId(getActivity());
 
 			if (TextUtils.isEmpty(regId)) {

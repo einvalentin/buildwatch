@@ -7,7 +7,12 @@
             android:key="continously_vibrate"
             android:title="@string/config_continuously_vibrate" >
         </CheckBoxPreference>
-    </PreferenceCategory>
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="only_show_failing_builds"
+            android:title="@string/config_only_failing" >
+        </CheckBoxPreference>
+        </PreferenceCategory>
 
     <!-- Configure via barcode -->
     <PreferenceScreen

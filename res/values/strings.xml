@@ -16,7 +16,7 @@
     <!-- Configuration -->
     <string name="menu_request_new_token">Request new GCM token</string>
     <string name="config_via_barcode_summary">Scan the QR Code right from your jenkins screen to set this up</string>
-    <string name="scan_qr_code">Scan the QR code from your Jenkins page</string>
+    <string name="barcode_scanner_not_installed_message">Barcode Scanning requires Zxing Barcode Scanner. Do you want to install it now from the market?</string>
     <string name="config_via_barcode_title">Auto setup</string>
     <string name="config_forget_settings">Forget Configuration</string>
     <string name="config_general">General Settings</string>
@@ -34,6 +34,7 @@
     <string name="config_gcm_sender_id">GCM SenderID</string>
     <string name="config_gcm_sender_id_summary">Using Project Nr %1$s (find on API Console)</string>
     <string name="config_continuously_vibrate">Continuously vibrate, if I broke the build</string>
+    <string name="config_only_failing">Only show failing builds</string>
 
     <!-- SmartExtension -->
     <string name="show_in_browser">Show on device</string>

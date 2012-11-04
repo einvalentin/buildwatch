@@ -1,3 +1,19 @@
+/*
+ * Copyright 2012 Valentin v. Seggern
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.crowflying.buildwatch;
 
 import java.io.DataOutputStream;
@@ -154,7 +170,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 		jenkins.putExtra(getString(R.string.extra_message), message);
 		jenkins.putExtra(getString(R.string.extra_ifuckedup), didIDoIt(gcm));
 		jenkins.putExtra(getString(R.string.extra_build_url),
-				parseBuildUrl(gcm, message));
+				parseBuildUrl(message));
 		context.startService(jenkins);
 	}
 
@@ -181,12 +197,20 @@ public class GCMIntentService extends GCMBaseIntentService {
 		return res;
 	}
 
-	private String parseBuildUrl(Intent intent, String message) {
-		// Worst regexp evar...
-		Pattern pattern = Pattern.compile("(http.*)");
+	/**
+	 * Try to parse the URL of the build from the message to be openend. If
+	 * parsing doesn't succeed return the jenkins base URL.
+	 * 
+	 * @param message
+	 *            The message from jenkins
+	 * @return The build url or the jenkins base url from the config.
+	 */
+	private String parseBuildUrl(String message) {
+		// This is not really a robust way to get the build URL from the message
+		// but it is only until the jenkins GCM plugin can parse this stuff and
+		// send it to us in the message...
+		Pattern pattern = Pattern.compile("(http(s*)://.*?)\\s");
 		Matcher matcher = pattern.matcher(message);
-		Log.d(LOG_TAG, " Group count: " + matcher.groupCount() + " msg: "
-				+ message);
 		if (matcher.find()) {
 			String match = matcher.group(0);
 			Log.d(LOG_TAG, " matched: " + match);
