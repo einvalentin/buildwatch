@@ -12,6 +12,7 @@
     <string name="new_token">Got new GCM token</string>
     <string name="fmt_unregistering_failed">Unregistering from jenkins failed: %1$s.</string>
 	<string name="fmt_registering_failed">Registering token in jenkins failed: %1$s.</string>
+	<string name="unsupported_device_c2dm">This device can not use Google Cloud Messaging. You need the Google APIs for that. Sorry.</string>
 
     <!-- Configuration -->
     <string name="menu_request_new_token">Request new GCM token</string>
@@ -35,7 +36,7 @@
     <string name="config_gcm_sender_id_summary">Using Project Nr %1$s (find on API Console)</string>
     <string name="config_continuously_vibrate">Continuously vibrate, if I broke the build</string>
     <string name="config_only_failing">Only show failing builds</string>
-
+    
     <!-- SmartExtension -->
     <string name="show_in_browser">Show on device</string>
 

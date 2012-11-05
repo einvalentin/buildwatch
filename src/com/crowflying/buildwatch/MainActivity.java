@@ -55,7 +55,7 @@ public class MainActivity extends Activity {
 		// Currently we just check for the GCM token, because you need sender id
 		// for that and we just hope that this is done via the QR code.
 		return !TextUtils.isEmpty(prefs.getString(
-				ConfigurationFragment.PREFS_KEY_GCM_TOKEN, null));
+				ConfigurationActivity.PREFS_KEY_GCM_TOKEN, null));
 	}
 
 }

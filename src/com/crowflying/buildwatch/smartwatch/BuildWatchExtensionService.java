@@ -22,6 +22,7 @@ import android.database.SQLException;
 import android.net.Uri;
 import android.util.Log;
 
+import com.crowflying.buildwatch.ConfigurationActivity;
 import com.crowflying.buildwatch.utils.IntentUtils;
 import com.sonyericsson.extras.liveware.aef.notification.Notification;
 import com.sonyericsson.extras.liveware.aef.registration.Registration;
@@ -149,7 +150,7 @@ public class BuildWatchExtensionService extends ExtensionService {
 				ContentValues values = new ContentValues();
 				values.put(
 						Registration.ExtensionColumns.CONFIGURATION_ACTIVITY,
-						BuildWatchPreferenceActivity.class.getName());
+						ConfigurationActivity.class.getName());
 
 				values.put(Registration.ExtensionColumns.CONFIGURATION_TEXT,
 						getString(R.string.configuration_text));

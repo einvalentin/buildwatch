@@ -1,11 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.crowflying.buildwatch"
     android:versionCode="1"
-    android:versionName="1.0">
+    android:versionName="1.0" >
 
-    <!-- Requires API level 8 for C2DM, level 11 for Fragments -->
+    <!-- Requires API level 8 for C2DM -->
     <uses-sdk
-        android:minSdkVersion="11"
+        android:minSdkVersion="8"
         android:targetSdkVersion="15" />
 
     <permission
@@ -35,17 +35,6 @@
         android:icon="@drawable/ic_buildwatch"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-
-        <!-- SmartWatch related stuff -->
-        <activity
-            android:name=".smartwatch.BuildWatchPreferenceActivity"
-            android:exported="false"
-            android:label="@string/configuration_text" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
-        </activity>
-
         <service
             android:name=".smartwatch.BuildWatchExtensionService"
             android:exported="false" >
@@ -102,7 +91,6 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:exported="false"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -114,11 +102,13 @@
             android:name=".ConfigurationActivity"
             android:exported="false"
             android:label="@string/configuration_text" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
         </activity>
 
         <receiver
             android:name="com.google.android.gcm.GCMBroadcastReceiver"
-            android:exported="false"
             android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />

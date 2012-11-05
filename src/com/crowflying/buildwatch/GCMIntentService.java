@@ -126,7 +126,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(this);
 		String jenkins = prefs.getString(
-				ConfigurationFragment.PREFS_KEY_JENKINS_URL, "");
+				ConfigurationActivity.PREFS_KEY_JENKINS_URL, "");
 		String uri = jenkins + "/gcm/register";
 		Log.d(LOG_TAG, String.format("About to talk to %s", uri));
 		URL url = new URL(uri);
@@ -136,10 +136,10 @@ public class GCMIntentService extends GCMBaseIntentService {
 		connection.setDoOutput(true);
 		connection.setConnectTimeout(30000);
 		String auth = prefs.getString(
-				ConfigurationFragment.PREFS_KEY_JENKINS_USERNAME, "")
+				ConfigurationActivity.PREFS_KEY_JENKINS_USERNAME, "")
 				+ ":"
 				+ prefs.getString(
-						ConfigurationFragment.PREFS_KEY_JENKINS_TOKEN, "");
+						ConfigurationActivity.PREFS_KEY_JENKINS_TOKEN, "");
 		String encoding = Base64.encodeToString(auth.getBytes("utf-8"),
 				Base64.DEFAULT);
 		Log.d(LOG_TAG, String.format(
@@ -183,7 +183,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 	private boolean didIDoIt(Intent intent) {
 		String username = PreferenceManager
 				.getDefaultSharedPreferences(this)
-				.getString(ConfigurationFragment.PREFS_KEY_JENKINS_USERNAME, "");
+				.getString(ConfigurationActivity.PREFS_KEY_JENKINS_USERNAME, "");
 		String comitters = intent.getStringExtra(GCM_KEY_COMITTERS);
 		if (TextUtils.isEmpty(comitters) || TextUtils.isEmpty(username)) {
 			Log.d(LOG_TAG,
@@ -219,7 +219,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 
 		String jenkinsBaseUrl = PreferenceManager.getDefaultSharedPreferences(
 				this)
-				.getString(ConfigurationFragment.PREFS_KEY_JENKINS_URL, "");
+				.getString(ConfigurationActivity.PREFS_KEY_JENKINS_URL, "");
 		return jenkinsBaseUrl;
 	}
 }
