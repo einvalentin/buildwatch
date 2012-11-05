@@ -145,7 +145,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 		Log.d(LOG_TAG, String.format(
 				"POSTing %s to %s - authenticating with (%s) -> %s", regId,
 				uri, auth, encoding));
-		connection.setRequestProperty("Authorization", "Basic " + encoding);
+		connection.setRequestProperty("Authorization", "Basic " + encoding.trim());
 		DataOutputStream dos = new DataOutputStream(
 				connection.getOutputStream());
 		dos.write((String.format("token=%s", regId).getBytes("utf-8")));
