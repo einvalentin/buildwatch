@@ -27,6 +27,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.Preference;
@@ -104,7 +105,12 @@ public class ConfigurationActivity extends PreferenceActivity implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.d(LOG_TAG, "onCreate()");
-		addPreferencesFromResource(R.xml.preferences);
+		Uri data = getIntent().getData();
+		if (data != null && data.toString().contains("server")) {
+			addPreferencesFromResource(R.xml.server_preferences);
+		} else {
+			addPreferencesFromResource(R.xml.preferences);
+		}
 	}
 
 	@Override
@@ -134,10 +140,17 @@ public class ConfigurationActivity extends PreferenceActivity implements
 
 		getPreferenceScreen().getSharedPreferences()
 				.registerOnSharedPreferenceChangeListener(this);
-		getPreferenceScreen().findPreference(PREFS_AUTOSETUP)
-				.setOnPreferenceClickListener(this);
-		getPreferenceManager().findPreference(PREFS_FORGET_SETTINGS)
-				.setOnPreferenceClickListener(this);
+		setPreferenceClickListener(getPreferenceScreen().findPreference(
+				PREFS_AUTOSETUP));
+		setPreferenceClickListener(getPreferenceManager().findPreference(
+				PREFS_FORGET_SETTINGS));
+
+	}
+
+	private void setPreferenceClickListener(Preference pref) {
+		if (pref != null) {
+			pref.setOnPreferenceClickListener(this);
+		}
 	}
 
 	/**
@@ -166,9 +179,12 @@ public class ConfigurationActivity extends PreferenceActivity implements
 		SharedPreferences prefs = getPreferenceScreen().getSharedPreferences();
 
 		for (Pair<String, Integer> p : setSummaryTextPrefs) {
-			findPreference(p.first).setSummary(
-					String.format(getString(p.second),
-							prefs.getString(p.first, "")));
+			Preference pref = findPreference(p.first);
+			if (pref != null) {
+				pref.setSummary(String.format(getString(p.second),
+						prefs.getString(p.first, "")));
+
+			}
 		}
 
 		Log.i(LOG_TAG, String.format(
@@ -349,7 +365,7 @@ public class ConfigurationActivity extends PreferenceActivity implements
 
 		@Override
 		protected void onPostExecute(String result) {
-			if (deviceCheckFailed){
+			if (deviceCheckFailed) {
 				Toast.makeText(ConfigurationActivity.this,
 						getString(R.string.unsupported_device_c2dm),
 						Toast.LENGTH_LONG).show();

@@ -12,7 +12,7 @@
             android:key="only_show_failing_builds"
             android:title="@string/config_only_failing" >
         </CheckBoxPreference>
-        </PreferenceCategory>
+    </PreferenceCategory>
 
     <!-- Configure via barcode -->
     <PreferenceScreen
@@ -20,33 +20,14 @@
         android:summary="@string/config_via_barcode_summary"
         android:title="@string/config_via_barcode_title" >
     </PreferenceScreen>
-    <PreferenceScreen android:title="@string/config_server_configuration" >
-
-        <!-- Jenkins -->
-        <PreferenceCategory android:title="@string/config_jenkins_configuration" >
-            <EditTextPreference
-                android:key="jenkins_base_url"
-                android:title="@string/config_jenkins_base_url" />
-            <EditTextPreference
-                android:key="jenkins_username"
-                android:title="@string/config_jenkins_username" />
-            <EditTextPreference
-                android:dependency="jenkins_username"
-                android:key="jenkins_token"
-                android:title="@string/config_jenkins_token" />
-        </PreferenceCategory>
-
-        <!-- GCM -->
-        <PreferenceCategory android:title="@string/config_gcm_configuration" >
-            <EditTextPreference
-                android:key="gcm_sender_id"
-                android:title="@string/config_gcm_sender_id" />
-            <EditTextPreference
-                android:dependency="gcm_sender_id"
-                android:enabled="false"
-                android:key="gcm_token"
-                android:title="@string/config_gcm_token" />
-        </PreferenceCategory>
+    <PreferenceScreen
+        android:key="server_prefs"
+        android:title="@string/config_server_configuration" >
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="preferences://server"
+            android:targetClass="com.crowflying.buildwatch.ConfigurationActivity"
+            android:targetPackage="com.crowflying.buildwatch" />
     </PreferenceScreen>
 
     <Preference

@@ -141,7 +141,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 				+ prefs.getString(
 						ConfigurationActivity.PREFS_KEY_JENKINS_TOKEN, "");
 		String encoding = Base64.encodeToString(auth.getBytes("utf-8"),
-				Base64.DEFAULT);
+				Base64.NO_WRAP);
 		Log.d(LOG_TAG, String.format(
 				"POSTing %s to %s - authenticating with (%s) -> %s", regId,
 				uri, auth, encoding));
