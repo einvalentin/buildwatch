@@ -16,24 +16,20 @@
 
 package com.crowflying.buildwatch;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.crowflying.buildwatch.jenkins.RegisterGCMTokenCommand;
 import com.google.android.gcm.GCMBaseIntentService;
 import com.google.android.gcm.GCMRegistrar;
 
@@ -89,19 +85,29 @@ public class GCMIntentService extends GCMBaseIntentService {
 	protected void onRegistered(Context context, String regId) {
 		Log.d(LOG_TAG, String.format("Registered with token %s", regId));
 		handlerOnUIThread.post(new DisplayToast(getString(R.string.new_token)));
-		Editor editor = PreferenceManager.getDefaultSharedPreferences(this)
-				.edit();
-		editor.putString("gcm_token", regId);
-		editor.commit();
 		try {
-			postTokenToJenkins(regId);
+			boolean registrationSuccessful = new RegisterGCMTokenCommand(this,
+					regId).execute();
+			Log.i(LOG_TAG, String.format(
+					"Registering token on server success: %s",
+					registrationSuccessful));
+			if (registrationSuccessful) {
+				Editor editor = PreferenceManager.getDefaultSharedPreferences(
+						this).edit();
+				editor.putString("gcm_token", regId);
+				editor.commit();
+				GCMRegistrar.setRegisteredOnServer(context, true);
+				handlerOnUIThread
+				.post(new DisplayToast(String.format(
+						getString(R.string.fmt_registering_success))));
+
+			}
 		} catch (IOException e) {
 			handlerOnUIThread
 					.post(new DisplayToast(String.format(
 							getString(R.string.fmt_registering_failed),
 							e.getMessage())));
 		}
-		GCMRegistrar.setRegisteredOnServer(context, true);
 	}
 
 	@Override
@@ -111,9 +117,12 @@ public class GCMIntentService extends GCMBaseIntentService {
 				.edit();
 		editor.remove("gcm_token");
 		editor.commit();
-		// Setting the API token on jenkins to the empty string.
 		try {
-			postTokenToJenkins("");
+			// Setting the API token on jenkins to the empty string.
+			boolean resetSuccess = new RegisterGCMTokenCommand(this, "")
+					.execute();
+			Log.i(LOG_TAG, String.format(
+					"Resetting token on server success: %s", resetSuccess));
 		} catch (IOException e) {
 			handlerOnUIThread.post(new DisplayToast(String.format(
 					getString(R.string.fmt_unregistering_failed),
@@ -122,51 +131,14 @@ public class GCMIntentService extends GCMBaseIntentService {
 		GCMRegistrar.setRegisteredOnServer(context, false);
 	}
 
-	private boolean postTokenToJenkins(String regId) throws IOException {
-		SharedPreferences prefs = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		String jenkins = prefs.getString(
-				ConfigurationActivity.PREFS_KEY_JENKINS_URL, "");
-		String uri = jenkins + "/gcm/register";
-		Log.d(LOG_TAG, String.format("About to talk to %s", uri));
-		URL url = new URL(uri);
-		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		connection.setRequestMethod("POST");
-		connection.setDoInput(true);
-		connection.setDoOutput(true);
-		connection.setConnectTimeout(30000);
-		String auth = prefs.getString(
-				ConfigurationActivity.PREFS_KEY_JENKINS_USERNAME, "")
-				+ ":"
-				+ prefs.getString(
-						ConfigurationActivity.PREFS_KEY_JENKINS_TOKEN, "");
-		String encoding = Base64.encodeToString(auth.getBytes("utf-8"),
-				Base64.NO_WRAP);
-		Log.d(LOG_TAG, String.format(
-				"POSTing %s to %s - authenticating with (%s) -> %s", regId,
-				uri, auth, encoding));
-		connection.setRequestProperty("Authorization", "Basic " + encoding.trim());
-		DataOutputStream dos = new DataOutputStream(
-				connection.getOutputStream());
-		dos.write((String.format("token=%s", regId).getBytes("utf-8")));
-		dos.close();
-		if (connection.getResponseCode() == 200) {
-			Log.d(LOG_TAG, "Hey got back HTTP 200. Beautifuuuuuuul");
-			return true;
-		}
-		Log.w(LOG_TAG, String.format(
-				"Crap. The server didn't like this. Status %s, Message: %s",
-				connection.getResponseCode(), connection.getResponseMessage()));
-		return false;
-	}
-
 	@Override
 	protected void onMessage(Context context, Intent gcm) {
-		Log.d(LOG_TAG,
-				String.format("GCM message received: %s", gcm.getAction()));
 		// Format the string.
 		Intent jenkins = new Intent(context.getString(R.string.action_jenkins));
 		String message = gcm.getStringExtra(GCM_KEY_MESSAGE);
+		Log.d(LOG_TAG,
+				String.format("GCM message received: %s. Message: %s",
+						gcm.getAction(), message));
 		jenkins.putExtra(getString(R.string.extra_message), message);
 		jenkins.putExtra(getString(R.string.extra_ifuckedup), didIDoIt(gcm));
 		jenkins.putExtra(getString(R.string.extra_build_url),
@@ -209,7 +181,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 		// This is not really a robust way to get the build URL from the message
 		// but it is only until the jenkins GCM plugin can parse this stuff and
 		// send it to us in the message...
-		Pattern pattern = Pattern.compile("(http(s*)://.*?)\\s");
+		Pattern pattern = Pattern.compile("(http(s*)://.*?)$");
 		Matcher matcher = pattern.matcher(message);
 		if (matcher.find()) {
 			String match = matcher.group(0);
