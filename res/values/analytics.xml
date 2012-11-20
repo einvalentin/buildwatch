@@ -3,10 +3,10 @@
 <resources>
   <!--Replace placeholder ID with your tracking ID-->
   <string name="ga_trackingId">UA-36446956-1</string>
-
   <!--Enable Activity tracking-->
   <bool name="ga_autoActivityTracking">true</bool>
-
+  <bool name="ga_debug">false</bool>
+  <bool name="ga_anonymizeIp">true</bool>
   <!--Enable automatic exception tracking-->
   <bool name="ga_reportUncaughtExceptions">true</bool>
 </resources>

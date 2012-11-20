@@ -30,6 +30,9 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.crowflying.buildwatch.jenkins.RegisterGCMTokenCommand;
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.GoogleAnalytics;
+import com.google.analytics.tracking.android.Tracker;
 import com.google.android.gcm.GCMBaseIntentService;
 import com.google.android.gcm.GCMRegistrar;
 
@@ -53,6 +56,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 	private final static String GCM_KEY_MESSAGE = "m";
 
 	private Handler handlerOnUIThread;
+	private Tracker tracker;
 
 	private class DisplayToast implements Runnable {
 		String mText;
@@ -70,6 +74,8 @@ public class GCMIntentService extends GCMBaseIntentService {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		EasyTracker.getInstance().setContext(getApplicationContext());
+		tracker = EasyTracker.getTracker();
 		// The looper for this handler will be on the UI thread.
 		handlerOnUIThread = new Handler();
 	}
@@ -77,6 +83,8 @@ public class GCMIntentService extends GCMBaseIntentService {
 	@Override
 	protected void onError(Context context, String errorId) {
 		Log.d(LOG_TAG, String.format("Error %s", errorId));
+		tracker.trackEvent("gcm", "error", "error",
+				0L);
 		handlerOnUIThread.post(new DisplayToast(String.format(
 				getString(R.string.fmt_gcm_error), errorId)));
 	}
@@ -92,17 +100,24 @@ public class GCMIntentService extends GCMBaseIntentService {
 					"Registering token on server success: %s",
 					registrationSuccessful));
 			if (registrationSuccessful) {
+				tracker.trackEvent("gcm",
+						"registration_on_jenkins", "success", 0L);
 				Editor editor = PreferenceManager.getDefaultSharedPreferences(
 						this).edit();
 				editor.putString("gcm_token", regId);
 				editor.commit();
 				GCMRegistrar.setRegisteredOnServer(context, true);
-				handlerOnUIThread
-				.post(new DisplayToast(String.format(
-						getString(R.string.fmt_registering_success))));
+				handlerOnUIThread.post(new DisplayToast(String
+						.format(getString(R.string.fmt_registering_success))));
+
+			} else {
+				tracker.trackEvent("gcm",
+						"registration_on_jenkins", "failure", 0L);
 
 			}
 		} catch (IOException e) {
+			tracker.trackEvent("gcm",
+					"registration_on_jenkins", "io_exception", 0L);
 			handlerOnUIThread
 					.post(new DisplayToast(String.format(
 							getString(R.string.fmt_registering_failed),
@@ -113,6 +128,8 @@ public class GCMIntentService extends GCMBaseIntentService {
 	@Override
 	protected void onUnregistered(Context context, String regId) {
 		Log.d(LOG_TAG, String.format("Unregistered with token %s", regId));
+		tracker.trackEvent("gcm",
+				"unregistration", "unregistered", 0L);
 		Editor editor = PreferenceManager.getDefaultSharedPreferences(this)
 				.edit();
 		editor.remove("gcm_token");
@@ -136,6 +153,9 @@ public class GCMIntentService extends GCMBaseIntentService {
 		// Format the string.
 		Intent jenkins = new Intent(context.getString(R.string.action_jenkins));
 		String message = gcm.getStringExtra(GCM_KEY_MESSAGE);
+		tracker.trackEvent("gcm",
+				"message", "received", 0L);
+
 		Log.d(LOG_TAG,
 				String.format("GCM message received: %s. Message: %s",
 						gcm.getAction(), message));
@@ -181,14 +201,15 @@ public class GCMIntentService extends GCMBaseIntentService {
 		// This is not really a robust way to get the build URL from the message
 		// but it is only until the jenkins GCM plugin can parse this stuff and
 		// send it to us in the message...
-		Pattern pattern = Pattern.compile("(http(s*)://.*?)$");
-		Matcher matcher = pattern.matcher(message);
-		if (matcher.find()) {
-			String match = matcher.group(0);
-			Log.d(LOG_TAG, " matched: " + match);
-			return match;
+		if (message != null) {
+			Pattern pattern = Pattern.compile("(http(s*)://.*?)$");
+			Matcher matcher = pattern.matcher(message);
+			if (matcher.find()) {
+				String match = matcher.group(0);
+				Log.d(LOG_TAG, " matched: " + match);
+				return match;
+			}
 		}
-
 		String jenkinsBaseUrl = PreferenceManager.getDefaultSharedPreferences(
 				this)
 				.getString(ConfigurationActivity.PREFS_KEY_JENKINS_URL, "");

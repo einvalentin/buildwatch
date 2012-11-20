@@ -15,7 +15,8 @@
  */
 package com.crowflying.buildwatch.smartwatch;
 
-import android.app.Service;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -56,33 +57,62 @@ public class BuildWatchExtensionService extends ExtensionService {
 		if (intent != null
 				&& getString(R.string.action_jenkins)
 						.equals(intent.getAction())) {
-			notifyWatch(intent);
+			sendMessage(intent);
 		}
 		stopSelfCheck();
 		return retval;
 	}
 
-	private void notifyWatch(Intent intent) {
+	private void sendMessage(Intent intent) {
 		String message = intent
 				.getStringExtra(getString(R.string.extra_message));
 		boolean iBrokeTheBuild = intent.getBooleanExtra(
 				getString(R.string.extra_ifuckedup), false);
 		String fullName = intent
 				.getStringExtra(getString(R.string.extra_fullname));
+		String url = intent.getStringExtra(getString(R.string.extra_build_url));
 
+		boolean messageSentToWatch = false;
+		boolean accessoriesConnected = areAnyAccessoriesConnected();
+		Log.i(LOG_TAG, String.format(
+				"Notifying buildwatch users. Accessories connected: %s",
+				accessoriesConnected));
+		if (accessoriesConnected) {
+			messageSentToWatch = notifyWach(message, fullName, url,
+					iBrokeTheBuild);
+		}
+		if (!messageSentToWatch) {
+			// Now, we know not many people have a Sony SmartWatch, so we are
+			// trying to bring at least some value to others trying to use this
+			// App and show a system notification.
+			notifyDevice(message, fullName, url, iBrokeTheBuild);
+		}
+	}
+
+	/**
+	 * Sends the notification to the watch.
+	 * 
+	 * @param message
+	 * @param fullname
+	 * @param url
+	 * @param iBrokeTheBuild
+	 * @return an indication whether the message was inserted successfully -
+	 *         this might not be complete.
+	 */
+	private boolean notifyWach(String message, String fullname, String url,
+			boolean iBrokeTheBuild) {
 		ContentValues eventValues = new ContentValues();
 		eventValues.put(Notification.EventColumns.EVENT_READ_STATUS, false);
 		// TODO: Make the image depend on the result of the build.
 		eventValues.put(Notification.EventColumns.PROFILE_IMAGE_URI,
 				ExtensionUtils.getUriString(getApplicationContext(),
 						R.drawable.bg_build_success));
-		eventValues.put(Notification.EventColumns.DISPLAY_NAME, fullName);
+		eventValues.put(Notification.EventColumns.DISPLAY_NAME, fullname);
 		eventValues.put(Notification.EventColumns.MESSAGE, message);
 		eventValues.put(Notification.EventColumns.PERSONAL, iBrokeTheBuild ? 1
 				: 0);
 		// my good friend, the url...
-		eventValues.put(Notification.EventColumns.FRIEND_KEY,
-				intent.getStringExtra(getString(R.string.extra_build_url)));
+		eventValues.put(Notification.EventColumns.FRIEND_KEY, url);
 		eventValues.put(Notification.EventColumns.PUBLISHED_TIME,
 				System.currentTimeMillis());
 		eventValues.put(Notification.EventColumns.SOURCE_ID, NotificationUtil
@@ -91,6 +121,7 @@ public class BuildWatchExtensionService extends ExtensionService {
 
 		try {
 			getContentResolver().insert(Notification.Event.URI, eventValues);
+			return true;
 		} catch (IllegalArgumentException e) {
 			Log.e(LOG_TAG, "Failed to insert event", e);
 		} catch (SecurityException e) {
@@ -100,6 +131,38 @@ public class BuildWatchExtensionService extends ExtensionService {
 		} catch (SQLException e) {
 			Log.e(LOG_TAG, "Failed to insert event", e);
 		}
+		return false;
+	}
+
+	/**
+	 * Shows a build notification as a native android notifcation on the device
+	 * for people without or with an unconnected SmartWatch..
+	 * 
+	 * @param message
+	 * @param fullname
+	 * @param url
+	 * @param iBrokeTheBuild
+	 */
+	private void notifyDevice(String message, String fullname, String url,
+			boolean iBrokeTheBuild) {
+		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+		android.app.Notification notification = new android.app.Notification(
+				R.drawable.ic_buildwatch,
+				String.format(getString(R.string.fmt_build_success_message),
+						fullname), System.currentTimeMillis());
+		Intent notificationIntent = new Intent(Intent.ACTION_VIEW);
+		if (url != null) {
+			notificationIntent.setData(Uri.parse(url));
+		}
+		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+				notificationIntent, 0);
+		notification.setLatestEventInfo(this, String.format(
+				getString(R.string.fmt_build_success_message), fullname),
+				message, contentIntent);
+		notification.flags |= android.app.Notification.FLAG_AUTO_CANCEL;
+		notificationManager.notify(4711, notification);
+
 	}
 
 	@Override

@@ -5,7 +5,7 @@
     <string name="jenkins">Jenkins</string>
     <string name="fmt_build_fail_message">%1$s just broke the %2$s build.</string>
     <string name="fmt_build_fail_message">%1$s just broke the %2$s build.</string>
-    <string name="fmt_build_success_message">%1$s was just built successfully.</string>
+    <string name="fmt_build_success_message">%1$s just triggered a successfull build.</string>
 
     <!-- GCM -->
     <string name="fmt_gcm_error">Error obtaining a GCM token: %1$s.</string>
@@ -37,6 +37,8 @@
     <string name="config_gcm_sender_id_summary">Using Project Nr %1$s (find on API Console)</string>
     <string name="config_continuously_vibrate">Continuously vibrate, if I broke the build</string>
     <string name="config_only_failing">Only show failing builds</string>
+    <string name="config_analytics_opt_out">Allow Google Analytics</string>
+    <string name="config_analytics_opt_out_summary">Please help us improving this app by allowing anonymous usage statistics.</string>
     
     <!-- SmartExtension -->
     <string name="show_in_browser">Show on device</string>

@@ -33,5 +33,10 @@
     <Preference
         android:key="forget_settings"
         android:title="@string/config_forget_settings" />
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="analytics_opt_out"
+        android:summary="@string/config_analytics_opt_out_summary"
+        android:title="@string/config_analytics_opt_out" />
 
 </PreferenceScreen>

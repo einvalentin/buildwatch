@@ -32,20 +32,22 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
-import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.GoogleAnalytics;
+import com.google.analytics.tracking.android.TrackedPreferenceActivity;
+import com.google.analytics.tracking.android.Tracker;
 import com.google.android.gcm.GCMRegistrar;
 import com.google.zxing.integration.android.IntentIntegrator;
 
-public class ConfigurationActivity extends PreferenceActivity implements
+public class ConfigurationActivity extends TrackedPreferenceActivity implements
 		OnSharedPreferenceChangeListener, OnPreferenceClickListener {
 
 	public static final String PREFS_AUTOSETUP = "scan_qr_code";
@@ -56,8 +58,11 @@ public class ConfigurationActivity extends PreferenceActivity implements
 	public static final String PREFS_KEY_JENKINS_USERNAME = "jenkins_username";
 	public static final String PREFS_KEY_JENKINS_TOKEN = "jenkins_token";
 	public static final String PREFS_KEY_JENKINS_PROJECTS = "jenkins_projects";
+	public static final String PREFS_KEY_ANALYTICS_OPTOUT = "analytics_opt_out";
 
 	private static final String LOG_TAG = "BuildWatchPreferencesActivity";
+
+	private Tracker tracker;
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
@@ -71,6 +76,20 @@ public class ConfigurationActivity extends PreferenceActivity implements
 			new GetCloudDeviceMessagingToken().execute(sharedPreferences
 					.getString(key, null));
 		}
+
+		if (PREFS_KEY_ANALYTICS_OPTOUT.equals(key)) {
+			boolean optout = !sharedPreferences.getBoolean(key, true);
+			tracker.trackEvent("configuration", "analytics", "output",
+					optout ? 0L : 1L);
+			if (optout) {
+				Log.d(LOG_TAG, "Opting the user out of analytics");
+			} else {
+				Log.d(LOG_TAG, "Opting the user in to analytics");
+			}
+			GoogleAnalytics.getInstance(getApplicationContext()).setAppOptOut(
+					optout);
+		}
+
 	}
 
 	@Override
@@ -86,6 +105,9 @@ public class ConfigurationActivity extends PreferenceActivity implements
 		// Call the code for autosetup...
 		if (PREFS_AUTOSETUP.equals(preference.getKey())) {
 			Log.d(LOG_TAG, "Calling XZING.");
+			tracker.trackEvent("configuration",
+					"subscreen", "autosetup", 0L);
+
 			IntentIntegrator integrator = new IntentIntegrator(this);
 			integrator
 					.setMessageByID(R.string.barcode_scanner_not_installed_message);
@@ -94,6 +116,8 @@ public class ConfigurationActivity extends PreferenceActivity implements
 		}
 		if (PREFS_FORGET_SETTINGS.equals(preference.getKey())) {
 			Log.d(LOG_TAG, "Forgetting all settings");
+			tracker.trackEvent("configuration",
+					"action", "settings_cleared", 0L);
 			PreferenceManager.getDefaultSharedPreferences(this).edit().clear()
 					.commit();
 			return true;
@@ -104,7 +128,9 @@ public class ConfigurationActivity extends PreferenceActivity implements
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.d(LOG_TAG, "onCreate()");
+		EasyTracker.getInstance().setContext(getApplicationContext());
+		tracker = EasyTracker.getTracker();
+		Log.d(LOG_TAG, String.format("Tracker: %s", tracker));
 		Uri data = getIntent().getData();
 		if (data != null && data.toString().contains("server")) {
 			addPreferencesFromResource(R.xml.server_preferences);
@@ -124,6 +150,9 @@ public class ConfigurationActivity extends PreferenceActivity implements
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (getString(R.string.menu_request_new_token).equals(item.getTitle())) {
+			tracker.trackEvent("configuration", "menu",
+					"req_new_gcm", 0L);
+
 			new GetCloudDeviceMessagingToken().execute(getPreferenceScreen()
 					.getSharedPreferences().getString(PREFS_KEY_GCM_SENDER_ID,
 							""));
@@ -224,6 +253,9 @@ public class ConfigurationActivity extends PreferenceActivity implements
 		protected Boolean doInBackground(Intent... data) {
 			try {
 				boolean configWorked = autoconfigureFromCode(data[0]);
+				tracker.trackEvent("configuration",
+						"autosetup", "parsed_configuration",
+						configWorked ? 0L : 1L);
 				if (configWorked) {
 					new GetCloudDeviceMessagingToken()
 							.execute(getPreferenceScreen()
@@ -346,21 +378,15 @@ public class ConfigurationActivity extends PreferenceActivity implements
 			try {
 				GCMRegistrar.checkDevice(ConfigurationActivity.this);
 			} catch (Exception e) {
+				tracker.trackEvent("configuration",
+						"gcm", "device_no_gcm", 0L);
 				Log.e(LOG_TAG, "Device can't use C2DM", e);
 				deviceCheckFailed = true;
 				return null;
 			}
 
-			final String regId = GCMRegistrar
-					.getRegistrationId(ConfigurationActivity.this);
-
-			if (TextUtils.isEmpty(regId)) {
-				GCMRegistrar.register(ConfigurationActivity.this, senderId);
-			} else {
-				Log.d(LOG_TAG,
-						String.format("Already registered. Token %s", regId));
-			}
-			return regId;
+			GCMRegistrar.register(ConfigurationActivity.this, senderId);
+			return GCMRegistrar.getRegistrationId(ConfigurationActivity.this);
 		}
 
 		@Override
@@ -370,8 +396,6 @@ public class ConfigurationActivity extends PreferenceActivity implements
 						getString(R.string.unsupported_device_c2dm),
 						Toast.LENGTH_LONG).show();
 			}
-
-			super.onPostExecute(result);
 		}
 	}
 

@@ -39,7 +39,6 @@
         android:theme="@style/AppTheme" >
         <service android:name=".smartwatch.BuildWatchExtensionService" >
             <intent-filter>
-
                 <!-- Intents from Jenkins -->
                 <action android:name="com.crowflying.buildwatch.ACTION_JENKINS" />
             </intent-filter>

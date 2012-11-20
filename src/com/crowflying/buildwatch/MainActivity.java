@@ -16,7 +16,6 @@
 
 package com.crowflying.buildwatch;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -24,7 +23,9 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.Menu;
 
-public class MainActivity extends Activity {
+import com.google.analytics.tracking.android.TrackedActivity;
+
+public class MainActivity extends TrackedActivity {
 	private static final String LOG_TAG = "MainActivity";
 
 	@Override
