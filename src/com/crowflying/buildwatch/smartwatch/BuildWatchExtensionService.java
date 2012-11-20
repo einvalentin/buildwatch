@@ -15,6 +15,7 @@
  */
 package com.crowflying.buildwatch.smartwatch;
 
+import android.app.Service;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -52,9 +53,12 @@ public class BuildWatchExtensionService extends ExtensionService {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Log.d(LOG_TAG, String.format("Got a jenkins watch command: %s", intent));
 		int retval = super.onStartCommand(intent, flags, startId);
-		if (getString(R.string.action_jenkins).equals(intent.getAction())) {
+		if (intent != null
+				&& getString(R.string.action_jenkins)
+						.equals(intent.getAction())) {
 			notifyWatch(intent);
 		}
+		stopSelfCheck();
 		return retval;
 	}
 
