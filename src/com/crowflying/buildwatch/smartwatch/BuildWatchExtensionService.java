@@ -26,6 +26,8 @@ import android.util.Log;
 
 import com.crowflying.buildwatch.ConfigurationActivity;
 import com.crowflying.buildwatch.utils.IntentUtils;
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.Tracker;
 import com.sonyericsson.extras.liveware.aef.notification.Notification;
 import com.sonyericsson.extras.liveware.aef.registration.Registration;
 import com.sonyericsson.extras.liveware.extension.util.ExtensionService;
@@ -39,11 +41,17 @@ public class BuildWatchExtensionService extends ExtensionService {
 	private static final String LOG_TAG = "BuildWatchExtensionService";
 
 	static final String EXTENSION_KEY = "com.crowflying.buildwatch";
+	private Tracker tracker;
 
 	public BuildWatchExtensionService() {
 		super(EXTENSION_KEY);
 		Log.d(LOG_TAG, "Creation");
 	}
+
+	public void onCreate() {
+		super.onCreate();
+		tracker = EasyTracker.getTracker();
+	};
 
 	@Override
 	public void onRegisterResult(boolean success) {
@@ -77,6 +85,7 @@ public class BuildWatchExtensionService extends ExtensionService {
 		Log.i(LOG_TAG, String.format(
 				"Notifying buildwatch users. Accessories connected: %s",
 				accessoriesConnected));
+
 		if (accessoriesConnected) {
 			messageSentToWatch = notifyWach(message, fullName, url,
 					iBrokeTheBuild);
@@ -87,6 +96,13 @@ public class BuildWatchExtensionService extends ExtensionService {
 			// App and show a system notification.
 			notifyDevice(message, fullName, url, iBrokeTheBuild);
 		}
+
+		// Meaning of val: 5: an accessory was connected and the message was
+		// sent to it. 11: no accessory connected, 10: accessory conncted but
+		// message could not be delivered to it.
+		long val = accessoriesConnected ? 0L : 1L;
+		val += messageSentToWatch ? 5 : 10;
+		tracker.trackEvent("utilities", "message", "delivered", val);
 	}
 
 	/**

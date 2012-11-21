@@ -60,7 +60,7 @@ public class ConfigurationActivity extends TrackedPreferenceActivity implements
 	public static final String PREFS_KEY_JENKINS_PROJECTS = "jenkins_projects";
 	public static final String PREFS_KEY_ANALYTICS_OPTOUT = "analytics_opt_out";
 
-	private static final String LOG_TAG = "BuildWatchPreferencesActivity";
+	private static final String LOG_TAG = "ConfigurationActivity";
 
 	private Tracker tracker;
 
@@ -104,7 +104,7 @@ public class ConfigurationActivity extends TrackedPreferenceActivity implements
 	public boolean onPreferenceClick(Preference preference) {
 		// Call the code for autosetup...
 		if (PREFS_AUTOSETUP.equals(preference.getKey())) {
-			Log.d(LOG_TAG, "Calling XZING.");
+			Log.i(LOG_TAG, "Calling XZING.");
 			tracker.trackEvent("configuration",
 					"subscreen", "autosetup", 0L);
 
@@ -115,7 +115,7 @@ public class ConfigurationActivity extends TrackedPreferenceActivity implements
 			return true;
 		}
 		if (PREFS_FORGET_SETTINGS.equals(preference.getKey())) {
-			Log.d(LOG_TAG, "Forgetting all settings");
+			Log.i(LOG_TAG, "Forgetting all settings");
 			tracker.trackEvent("configuration",
 					"action", "settings_cleared", 0L);
 			PreferenceManager.getDefaultSharedPreferences(this).edit().clear()
@@ -130,7 +130,6 @@ public class ConfigurationActivity extends TrackedPreferenceActivity implements
 		super.onCreate(savedInstanceState);
 		EasyTracker.getInstance().setContext(getApplicationContext());
 		tracker = EasyTracker.getTracker();
-		Log.d(LOG_TAG, String.format("Tracker: %s", tracker));
 		Uri data = getIntent().getData();
 		if (data != null && data.toString().contains("server")) {
 			addPreferencesFromResource(R.xml.server_preferences);
@@ -216,7 +215,7 @@ public class ConfigurationActivity extends TrackedPreferenceActivity implements
 			}
 		}
 
-		Log.i(LOG_TAG, String.format(
+		Log.d(LOG_TAG, String.format(
 				"Updating summaries took %s ms. This can easily be optimized.",
 				(System.currentTimeMillis() - t1)));
 

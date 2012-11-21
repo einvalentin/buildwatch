@@ -3,6 +3,14 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
+    <supports-screens
+        android:anyDensity="true"
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:resizeable="true"
+        android:smallScreens="true"
+        android:xlargeScreens="true" />
+
     <!-- Requires API level 8 for C2DM -->
     <uses-sdk
         android:minSdkVersion="8"
@@ -39,6 +47,7 @@
         android:theme="@style/AppTheme" >
         <service android:name=".smartwatch.BuildWatchExtensionService" >
             <intent-filter>
+
                 <!-- Intents from Jenkins -->
                 <action android:name="com.crowflying.buildwatch.ACTION_JENKINS" />
             </intent-filter>
@@ -80,11 +89,6 @@
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:windowSoftInputMode="stateAlwaysHidden" >
-            <intent-filter>
-                <action android:name="com.google.zxing.client.android.SCAN" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".MainActivity"
