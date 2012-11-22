@@ -50,6 +50,7 @@ public class BuildWatchExtensionService extends ExtensionService {
 
 	public void onCreate() {
 		super.onCreate();
+		EasyTracker.getInstance().setContext(getApplicationContext());
 		tracker = EasyTracker.getTracker();
 	};
 
