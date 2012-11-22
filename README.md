@@ -12,3 +12,10 @@ Have fun and please submit pull requests if you improve the app.
 
 Thanks,  
 Valentin
+
+Planned Features
+~~~~~~~~~~~~~~~~
+* Because of the interface from the jenkins gcm plugin, we currently don't have rich information of the build but just the build status message which we can't parse, because it is language dependent. If stuff happens on jenkins, we should try to query the build json api to find out if the build was successful or not or who is the culprit. Of course this solution is suboptimal, because it requires TCP/IP connectivity to the jenkins server from the phone - the beauty of using GCM is that this is not required.
+* The settings 'only show successfull builds' and 'vibrate continuously if I broke the build' currently do nothing because of what is mentioned above.
+* We currently only insert notifications into the content provider but never delete anything. We should only keep the latest 20 notifications or so. Alternatively as a quick fix, provide a setting to clear all notifications from BuildWatch
+* If you don't have a SmartWatch, the app is currently of very limited use because it only shows an android notification. Maybe we can integrate with the open source jenkins monitor plugin somehow to have a nicer UI.
