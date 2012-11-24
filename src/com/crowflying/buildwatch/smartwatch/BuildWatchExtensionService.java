@@ -164,10 +164,11 @@ public class BuildWatchExtensionService extends ExtensionService {
 			boolean iBrokeTheBuild) {
 		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
+		// TODO: This should contain status and project name.
 		android.app.Notification notification = new android.app.Notification(
 				R.drawable.ic_buildwatch,
-				String.format(getString(R.string.fmt_build_success_message),
-						fullname), System.currentTimeMillis());
+				getString(R.string.new_message_from_jenkins),
+				System.currentTimeMillis());
 		Intent notificationIntent = new Intent(Intent.ACTION_VIEW);
 		if (url != null) {
 			notificationIntent.setData(Uri.parse(url));
@@ -175,7 +176,7 @@ public class BuildWatchExtensionService extends ExtensionService {
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
 				notificationIntent, 0);
 		notification.setLatestEventInfo(this, String.format(
-				getString(R.string.fmt_build_success_message), fullname),
+				getString(R.string.new_message_from_jenkins), fullname),
 				message, contentIntent);
 		notification.flags |= android.app.Notification.FLAG_AUTO_CANCEL;
 		notificationManager.notify(4711, notification);

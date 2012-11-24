@@ -3,9 +3,7 @@
     <string name="app_name">BuildWatch</string>
     <string name="configuration_text">Configuration</string>
     <string name="jenkins">Jenkins</string>
-    <string name="fmt_build_fail_message">%1$s just broke the %2$s build.</string>
-    <string name="fmt_build_fail_message">%1$s just broke the %2$s build.</string>
-    <string name="fmt_build_success_message">%1$s just triggered a successfull build.</string>
+    <string name="new_message_from_jenkins">New message from Jenkins</string>
 
     <!-- GCM -->
     <string name="fmt_gcm_error">Error obtaining a GCM token: %1$s.</string>
