@@ -25,6 +25,7 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.crowflying.buildwatch.ConfigurationActivity;
+import com.crowflying.buildwatch.R;
 import com.crowflying.buildwatch.utils.IntentUtils;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Tracker;
@@ -34,7 +35,6 @@ import com.sonyericsson.extras.liveware.extension.util.ExtensionService;
 import com.sonyericsson.extras.liveware.extension.util.ExtensionUtils;
 import com.sonyericsson.extras.liveware.extension.util.notification.NotificationUtil;
 import com.sonyericsson.extras.liveware.extension.util.registration.RegistrationInformation;
-import com.sonyericsson.extras.liveware.sdk.R;
 
 public class BuildWatchExtensionService extends ExtensionService {
 

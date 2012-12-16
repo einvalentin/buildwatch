@@ -59,6 +59,7 @@ public class ConfigurationActivity extends TrackedPreferenceActivity implements
 	public static final String PREFS_KEY_JENKINS_TOKEN = "jenkins_token";
 	public static final String PREFS_KEY_JENKINS_PROJECTS = "jenkins_projects";
 	public static final String PREFS_KEY_ANALYTICS_OPTOUT = "analytics_opt_out";
+	public static final String PREFS_KEY_LAUNCH_WEBSITE = "launch_website";
 
 	private static final String LOG_TAG = "ConfigurationActivity";
 
@@ -93,20 +94,11 @@ public class ConfigurationActivity extends TrackedPreferenceActivity implements
 	}
 
 	@Override
-	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen,
-			Preference preference) {
-		Log.d(LOG_TAG, String.format("onPreferenceTreeClick(%s,%s)",
-				preferenceScreen, preference));
-		return super.onPreferenceTreeClick(preferenceScreen, preference);
-	}
-
-	@Override
 	public boolean onPreferenceClick(Preference preference) {
 		// Call the code for autosetup...
 		if (PREFS_AUTOSETUP.equals(preference.getKey())) {
 			Log.i(LOG_TAG, "Calling XZING.");
-			tracker.trackEvent("configuration",
-					"subscreen", "autosetup", 0L);
+			tracker.trackEvent("configuration", "subscreen", "autosetup", 0L);
 
 			IntentIntegrator integrator = new IntentIntegrator(this);
 			integrator
@@ -116,10 +108,17 @@ public class ConfigurationActivity extends TrackedPreferenceActivity implements
 		}
 		if (PREFS_FORGET_SETTINGS.equals(preference.getKey())) {
 			Log.i(LOG_TAG, "Forgetting all settings");
-			tracker.trackEvent("configuration",
-					"action", "settings_cleared", 0L);
+			tracker.trackEvent("configuration", "action", "settings_cleared",
+					0L);
 			PreferenceManager.getDefaultSharedPreferences(this).edit().clear()
 					.commit();
+			return true;
+		}
+		if (PREFS_KEY_LAUNCH_WEBSITE.equals(preference.getKey())) {
+			Log.i(LOG_TAG, "Launching website");
+			Intent i = new Intent(Intent.ACTION_VIEW);
+			i.setData(Uri.parse(getString(R.string.config_launch_website_url)));
+			startActivity(i);
 			return true;
 		}
 		return false;
@@ -149,8 +148,7 @@ public class ConfigurationActivity extends TrackedPreferenceActivity implements
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (getString(R.string.menu_request_new_token).equals(item.getTitle())) {
-			tracker.trackEvent("configuration", "menu",
-					"req_new_gcm", 0L);
+			tracker.trackEvent("configuration", "menu", "req_new_gcm", 0L);
 
 			new GetCloudDeviceMessagingToken().execute(getPreferenceScreen()
 					.getSharedPreferences().getString(PREFS_KEY_GCM_SENDER_ID,
@@ -168,10 +166,9 @@ public class ConfigurationActivity extends TrackedPreferenceActivity implements
 
 		getPreferenceScreen().getSharedPreferences()
 				.registerOnSharedPreferenceChangeListener(this);
-		setPreferenceClickListener(getPreferenceScreen().findPreference(
-				PREFS_AUTOSETUP));
-		setPreferenceClickListener(getPreferenceManager().findPreference(
-				PREFS_FORGET_SETTINGS));
+		setPreferenceClickListener(findPreference(PREFS_AUTOSETUP));
+		setPreferenceClickListener(findPreference(PREFS_FORGET_SETTINGS));
+		setPreferenceClickListener(findPreference(PREFS_KEY_LAUNCH_WEBSITE));
 
 	}
 
@@ -252,9 +249,8 @@ public class ConfigurationActivity extends TrackedPreferenceActivity implements
 		protected Boolean doInBackground(Intent... data) {
 			try {
 				boolean configWorked = autoconfigureFromCode(data[0]);
-				tracker.trackEvent("configuration",
-						"autosetup", "parsed_configuration",
-						configWorked ? 0L : 1L);
+				tracker.trackEvent("configuration", "autosetup",
+						"parsed_configuration", configWorked ? 0L : 1L);
 				if (configWorked) {
 					new GetCloudDeviceMessagingToken()
 							.execute(getPreferenceScreen()
@@ -377,8 +373,7 @@ public class ConfigurationActivity extends TrackedPreferenceActivity implements
 			try {
 				GCMRegistrar.checkDevice(ConfigurationActivity.this);
 			} catch (Exception e) {
-				tracker.trackEvent("configuration",
-						"gcm", "device_no_gcm", 0L);
+				tracker.trackEvent("configuration", "gcm", "device_no_gcm", 0L);
 				Log.e(LOG_TAG, "Device can't use C2DM", e);
 				deviceCheckFailed = true;
 				return null;

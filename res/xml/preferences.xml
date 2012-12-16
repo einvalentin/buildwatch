@@ -33,6 +33,11 @@
     <Preference
         android:key="forget_settings"
         android:title="@string/config_forget_settings" />
+    <Preference
+        android:key="launch_website"
+        android:summary="@string/config_launch_website_summary"
+        android:title="@string/config_launch_website" />
+
     <CheckBoxPreference
         android:defaultValue="true"
         android:key="analytics_opt_out"

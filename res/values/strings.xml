@@ -9,9 +9,9 @@
     <string name="fmt_gcm_error">Error obtaining a GCM token: %1$s.</string>
     <string name="new_token">Got new GCM token</string>
     <string name="fmt_unregistering_failed">Unregistering from jenkins failed: %1$s.</string>
-	<string name="fmt_registering_failed">Registering token in jenkins failed: %1$s.</string>
-	<string name="fmt_registering_success">Successfully registered token with jenkins.</string>
-	<string name="unsupported_device_c2dm">This device can not use Google Cloud Messaging. You need the Google APIs for that. Sorry.</string>
+    <string name="fmt_registering_failed">Registering token in jenkins failed: %1$s.</string>
+    <string name="fmt_registering_success">Successfully registered token with jenkins.</string>
+    <string name="unsupported_device_c2dm">This device can not use Google Cloud Messaging. You need the Google APIs for that. Sorry.</string>
 
     <!-- Configuration -->
     <string name="menu_request_new_token">Request new GCM token</string>
@@ -19,6 +19,9 @@
     <string name="barcode_scanner_not_installed_message">Barcode Scanning requires Zxing Barcode Scanner. Do you want to install it now from the market?</string>
     <string name="config_via_barcode_title">Auto setup</string>
     <string name="config_forget_settings">Forget Configuration</string>
+    <string name="config_launch_website">Installation Instructions</string>
+    <string name="config_launch_website_summary">Launch website with installation instructions</string>
+    <string name="config_launch_website_url">http://www.buildwatch.org/setup.html?utm_source=app&amp;utm_medium=settings</string>
     <string name="config_general">General Settings</string>
     <string name="config_server_configuration">Server Configuration</string>
     <string name="config_jenkins_configuration">Jenkins Configuration</string>
@@ -37,7 +40,7 @@
     <string name="config_only_failing">Only show failing builds</string>
     <string name="config_analytics_opt_out">Allow Google Analytics</string>
     <string name="config_analytics_opt_out_summary">Please help us improving this app by allowing anonymous usage statistics.</string>
-    
+
     <!-- SmartExtension -->
     <string name="show_in_browser">Show on device</string>
 
@@ -47,4 +50,5 @@
     <string name="extra_ifuckedup">com.crowflying.buildwatch.EXTRA_IFUCKEDUP</string>
     <string name="extra_fullname">com.crowflying.buildwatch.EXTRA_USER</string>
     <string name="extra_build_url">com.crowflying.buildwatch.EXTRA_BUILD_URL</string>
+
 </resources>
