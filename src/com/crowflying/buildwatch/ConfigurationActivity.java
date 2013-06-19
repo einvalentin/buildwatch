@@ -34,6 +34,7 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 import android.view.Menu;
@@ -95,6 +96,9 @@ public class ConfigurationActivity extends TrackedPreferenceActivity implements
 
 	@Override
 	public boolean onPreferenceClick(Preference preference) {
+		Log.d(LOG_TAG,
+				String.format("Preference %s was clicked...",
+						preference.getKey()));
 		// Call the code for autosetup...
 		if (PREFS_AUTOSETUP.equals(preference.getKey())) {
 			Log.i(LOG_TAG, "Calling XZING.");
@@ -119,6 +123,25 @@ public class ConfigurationActivity extends TrackedPreferenceActivity implements
 			Intent i = new Intent(Intent.ACTION_VIEW);
 			i.setData(Uri.parse(getString(R.string.config_launch_website_url)));
 			startActivity(i);
+			return true;
+		}
+		if (PREFS_KEY_GCM_TOKEN.equals(preference.getKey())) {
+			String token = getPreferenceManager().getSharedPreferences()
+					.getString(PREFS_KEY_GCM_TOKEN, "");
+			if (!TextUtils.isEmpty(token)) {
+				Log.i(LOG_TAG,
+						"Token clicked. Echoing it to the logfile for convencience: "
+								+ token);
+				Intent sharingIntent = new Intent(
+						android.content.Intent.ACTION_SEND);
+				sharingIntent.setType("text/plain");
+				sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
+						getString(R.string.share_gcm_token_subject));
+				sharingIntent
+						.putExtra(android.content.Intent.EXTRA_TEXT, token);
+				startActivity(Intent.createChooser(sharingIntent,
+						getString(R.string.share_gcm_token_using)));
+			}
 			return true;
 		}
 		return false;
@@ -166,15 +189,18 @@ public class ConfigurationActivity extends TrackedPreferenceActivity implements
 
 		getPreferenceScreen().getSharedPreferences()
 				.registerOnSharedPreferenceChangeListener(this);
-		setPreferenceClickListener(findPreference(PREFS_AUTOSETUP));
-		setPreferenceClickListener(findPreference(PREFS_FORGET_SETTINGS));
-		setPreferenceClickListener(findPreference(PREFS_KEY_LAUNCH_WEBSITE));
-
+		setPreferenceClickListener(PREFS_AUTOSETUP);
+		setPreferenceClickListener(PREFS_FORGET_SETTINGS);
+		setPreferenceClickListener(PREFS_KEY_LAUNCH_WEBSITE);
+		setPreferenceClickListener(PREFS_KEY_GCM_TOKEN);
 	}
 
-	private void setPreferenceClickListener(Preference pref) {
+	private void setPreferenceClickListener(String key) {
+		Preference pref = findPreference(key);
 		if (pref != null) {
 			pref.setOnPreferenceClickListener(this);
+		} else {
+			Log.d(LOG_TAG, String.format("Preference %s was null...", key));
 		}
 	}
 
@@ -209,6 +235,18 @@ public class ConfigurationActivity extends TrackedPreferenceActivity implements
 				pref.setSummary(String.format(getString(p.second),
 						prefs.getString(p.first, "")));
 
+			}
+		}
+
+		// Add 'press to share' to GCM token pref, if there is a token
+		// configured.
+		if (!TextUtils.isEmpty(prefs.getString(PREFS_KEY_GCM_TOKEN, ""))) {
+			Preference pref = findPreference(PREFS_KEY_GCM_TOKEN);
+			if (pref != null) {
+				CharSequence summary = pref.getSummary();
+				summary = summary + " "
+						+ getString(R.string.config_gcm_token_summary_share);
+				pref.setSummary(summary);
 			}
 		}
 

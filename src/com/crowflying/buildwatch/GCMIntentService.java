@@ -100,19 +100,19 @@ public class GCMIntentService extends GCMBaseIntentService {
 		Log.d(LOG_TAG, String.format("Registered with token %s", regId));
 		handlerOnUIThread.post(new DisplayToast(getString(R.string.new_token)));
 		try {
-			boolean registrationSuccessful = new RegisterGCMTokenCommand(this,
-					regId).execute();
+			Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+			editor.putString("gcm_token", regId);
+			editor.commit();
+			GCMRegistrar.setRegisteredOnServer(context, true);
+			boolean registrationSuccessful = new RegisterGCMTokenCommand(this, regId).execute();
+
 			Log.i(LOG_TAG, String.format(
 					"Registering token on server success: %s",
 					registrationSuccessful));
+
 			if (registrationSuccessful) {
 				tracker.trackEvent("gcm", "registration_on_jenkins", "success",
 						0L);
-				Editor editor = PreferenceManager.getDefaultSharedPreferences(
-						this).edit();
-				editor.putString("gcm_token", regId);
-				editor.commit();
-				GCMRegistrar.setRegisteredOnServer(context, true);
 				handlerOnUIThread.post(new DisplayToast(String
 						.format(getString(R.string.fmt_registering_success))));
 
@@ -172,7 +172,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 
 	/**
 	 * Determine if the current user caused this event...
-	 * 
+	 *
 	 * @param intent
 	 * @return
 	 */
@@ -196,7 +196,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 	/**
 	 * Try to parse the URL of the build from the message to be openend. If
 	 * parsing doesn't succeed return the jenkins base URL.
-	 * 
+	 *
 	 * @param message
 	 *            The message from jenkins
 	 * @return The build url or the jenkins base url from the config.

@@ -1,19 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-
-    <PreferenceCategory android:title="@string/config_general" >
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="continously_vibrate"
-            android:title="@string/config_continuously_vibrate" >
-        </CheckBoxPreference>
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="only_show_failing_builds"
-            android:title="@string/config_only_failing" >
-        </CheckBoxPreference>
-    </PreferenceCategory>
-
     <!-- Configure via barcode -->
     <PreferenceScreen
         android:key="scan_qr_code"

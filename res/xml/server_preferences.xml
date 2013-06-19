@@ -21,9 +21,8 @@
         <EditTextPreference
             android:key="gcm_sender_id"
             android:title="@string/config_gcm_sender_id" />
-        <EditTextPreference
+        <Preference
             android:dependency="gcm_sender_id"
-            android:enabled="false"
             android:key="gcm_token"
             android:title="@string/config_gcm_token" />
     </PreferenceCategory>

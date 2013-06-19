@@ -88,7 +88,7 @@ public class BuildWatchExtensionService extends ExtensionService {
 				accessoriesConnected));
 
 		if (accessoriesConnected) {
-			messageSentToWatch = notifyWach(message, fullName, url,
+			messageSentToWatch = notifyWatch(message, fullName, url,
 					iBrokeTheBuild);
 		}
 		if (!messageSentToWatch) {
@@ -98,12 +98,22 @@ public class BuildWatchExtensionService extends ExtensionService {
 			notifyDevice(message, fullName, url, iBrokeTheBuild);
 		}
 
-		// Meaning of val: 5: an accessory was connected and the message was
-		// sent to it. 11: no accessory connected, 10: accessory conncted but
-		// message could not be delivered to it.
-		long val = accessoriesConnected ? 0L : 1L;
-		val += messageSentToWatch ? 5 : 10;
-		tracker.trackEvent("utilities", "message", "delivered", val);
+		// Track whether people actually use the smart watch or just device
+		// notifications.
+		if (accessoriesConnected) {
+			tracker.trackEvent("utilities", "message", "accessory_connected",
+					1L);
+		} else {
+			tracker.trackEvent("utilities", "message",
+					"accessory_not_connected", 1L);
+		}
+		if (messageSentToWatch) {
+			tracker.trackEvent("utilities", "message", "message_sent_to_watch",
+					1L);
+		} else {
+			tracker.trackEvent("utilities", "message",
+					"message_not_sent_to_watch", 1L);
+		}
 	}
 
 	/**
@@ -116,7 +126,7 @@ public class BuildWatchExtensionService extends ExtensionService {
 	 * @return an indication whether the message was inserted successfully -
 	 *         this might not be complete.
 	 */
-	private boolean notifyWach(String message, String fullname, String url,
+	private boolean notifyWatch(String message, String fullname, String url,
 			boolean iBrokeTheBuild) {
 		ContentValues eventValues = new ContentValues();
 		eventValues.put(Notification.EventColumns.EVENT_READ_STATUS, false);
