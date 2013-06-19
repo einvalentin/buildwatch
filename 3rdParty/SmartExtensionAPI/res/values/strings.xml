@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="UnusedResources">
+    <!-- At least one dummy resource is needed to satisfy aapt.
+    Otherwise it complains about no res folder. -->
+    <string name="app_name">SmartExtensionAPI</string>
+</resources>

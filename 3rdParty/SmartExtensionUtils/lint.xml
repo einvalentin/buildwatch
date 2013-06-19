@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <issue id="ContentDescription">
+        <!-- These layouts are shown on the accessory so no content description is needed. -->
+        <ignore path="res/layout/smart_watch_notification_widget.xml" />
+        <ignore path="res/layout/smart_watch_widget.xml" />
+    </issue>
+    <issue id="PxUsage">
+        <!-- These layouts are shown on the accessory so we use pixels.
+        (Since the accessory display has nothing with the dpi of the phone to do. -->
+        <ignore path="res/layout/smart_watch_notification_widget.xml" />
+        <ignore path="res/layout/smart_watch_widget.xml" />
+    </issue>
+    <!-- Ignore unused resources since there a constants for extensions. -->
+    <issue id="UnusedResources" severity="ignore"/>
+    <!-- No icon for a library project so ignore missing densities. -->
+    <issue id="IconMissingDensityFolder" severity="ignore"/>
+    <!-- Images for accessory is in density less folder. -->
+    <issue id="IconLocation" severity="ignore"/>
+</lint>
