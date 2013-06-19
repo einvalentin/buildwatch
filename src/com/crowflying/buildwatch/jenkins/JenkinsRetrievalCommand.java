@@ -146,5 +146,6 @@ public abstract class JenkinsRetrievalCommand<T> {
 	 * 
 	 */
 	public static final class ParserException extends IOException {
+		private static final long serialVersionUID = 252350300072318883L;
 	}
 }

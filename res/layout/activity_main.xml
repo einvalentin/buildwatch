@@ -3,4 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
+    <TextView
+        android:id="@+id/message"
+        android:padding="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:ems="10"
+        android:text="Project OtaAcceptanceTestsCPI build #77: STILL FAILING in 3 min 6 sec: https://vm012.bn.detemobil.de/jenkins/job/OtaAcceptanceTestsCPI/77/
+harald.hoeppner: added proxy authentication">
+    </TextView>
+
 </RelativeLayout>

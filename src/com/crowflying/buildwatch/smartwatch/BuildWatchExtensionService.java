@@ -22,9 +22,11 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.net.Uri;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.crowflying.buildwatch.ConfigurationActivity;
+import com.crowflying.buildwatch.MainActivity;
 import com.crowflying.buildwatch.R;
 import com.crowflying.buildwatch.utils.IntentUtils;
 import com.google.analytics.tracking.android.EasyTracker;
@@ -174,21 +176,34 @@ public class BuildWatchExtensionService extends ExtensionService {
 			boolean iBrokeTheBuild) {
 		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
-		// TODO: This should contain status and project name.
-		android.app.Notification notification = new android.app.Notification(
-				R.drawable.ic_buildwatch,
-				getString(R.string.new_message_from_jenkins),
-				System.currentTimeMillis());
-		Intent notificationIntent = new Intent(Intent.ACTION_VIEW);
+		Intent openInJenkins = new Intent(Intent.ACTION_VIEW);
 		if (url != null) {
-			notificationIntent.setData(Uri.parse(url));
+			openInJenkins.setData(Uri.parse(url));
 		}
-		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-				notificationIntent, 0);
-		notification.setLatestEventInfo(this, String.format(
-				getString(R.string.new_message_from_jenkins), fullname),
-				message, contentIntent);
-		notification.flags |= android.app.Notification.FLAG_AUTO_CANCEL;
+
+		Intent showMessage = new Intent(getApplicationContext(),
+				MainActivity.class);
+		showMessage.putExtra(getString(R.string.extra_message), message);
+
+		android.app.Notification notification = new NotificationCompat.Builder(
+				getApplicationContext())
+				.setSmallIcon(R.drawable.ic_buildwatch)
+				.setContentTitle(getString(R.string.new_message_from_jenkins))
+				.setWhen(System.currentTimeMillis())
+				.setAutoCancel(true)
+				.setContentIntent(
+						PendingIntent.getActivity(this, 0, openInJenkins,
+								PendingIntent.FLAG_UPDATE_CURRENT))
+				.addAction(
+						R.drawable.jenkins_30x30,
+						getString(R.string.open_in_jenkins),
+						PendingIntent.getActivity(this, 0, openInJenkins,
+								PendingIntent.FLAG_UPDATE_CURRENT))
+				.addAction(
+						android.R.drawable.ic_menu_info_details,
+						getString(R.string.show_message),
+						PendingIntent.getActivity(this, 0, showMessage,
+								PendingIntent.FLAG_UPDATE_CURRENT)).build();
 		notificationManager.notify(4711, notification);
 
 	}

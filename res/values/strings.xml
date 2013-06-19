@@ -44,6 +44,8 @@
 
     <!-- SmartExtension -->
     <string name="show_in_browser">Show on device</string>
+    <string name="open_in_jenkins">Open Jenkins</string>
+    <string name="show_message">Show</string>
 
     <!-- Intents & Extras -->
     <string name="action_jenkins">com.crowflying.buildwatch.ACTION_JENKINS</string>

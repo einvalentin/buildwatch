@@ -33,7 +33,6 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceManager;
-import android.preference.PreferenceScreen;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;

@@ -16,32 +16,55 @@
 
 package com.crowflying.buildwatch;
 
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.google.analytics.tracking.android.TrackedActivity;
 
 public class MainActivity extends TrackedActivity {
-	private static final String LOG_TAG = "MainActivity";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// if (!isConfigured()) {
-		startActivity(new Intent(this, ConfigurationActivity.class));
-		finish();
-		// }
+
+		String message = getIntent().getStringExtra(
+				getString(R.string.extra_message));
+
+		if (!isConfigured() || TextUtils.isEmpty(message)) {
+			startActivity(new Intent(this, ConfigurationActivity.class));
+			finish();
+			return;
+		}
+		NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		manager.cancelAll();
 		setContentView(R.layout.activity_main);
+		((TextView) findViewById(R.id.message)).setText(message);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.activity_main, menu);
 		return true;
+	}
+
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.menu_settings:
+			startActivity(new Intent(this, ConfigurationActivity.class));
+			return true;
+		default:
+			return super.onMenuItemSelected(featureId, item);
+		}
+
 	}
 
 	/**

@@ -31,28 +31,13 @@ import android.widget.Toast;
 
 import com.crowflying.buildwatch.jenkins.RegisterGCMTokenCommand;
 import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.GoogleAnalytics;
 import com.google.analytics.tracking.android.Tracker;
 import com.google.android.gcm.GCMBaseIntentService;
 import com.google.android.gcm.GCMRegistrar;
 
 public class GCMIntentService extends GCMBaseIntentService {
 	private static final String LOG_TAG = "GCMIntentService";
-
-	private static final int BUILD_STATE_SUCCESS = 0;
-	private static final int BUILD_STATE_FAILURE = 1;
-	private static final int BUILD_STATE_UNSTABLE = 2;
-	private static final int BUILD_STATE_SCHEDULED = 3;
-	private static final int BUILD_STATE_STARTED = 4;
-
-	private final static String GCM_KEY_STATE = "s";
-	private final static String GCM_KEY_JENKINS_URL = "u";
-	private final static String GCM_KEY_PROJECT_NAME = "p";
-	private final static String GCM_KEY_BUILD_NUMBER = "b";
-	private final static String GCM_KEY_REASONS = "r";
 	private final static String GCM_KEY_COMITTERS = "i";
-	private final static String GCM_KEY_FULLNAMES = "n";
-	private final static String GCM_KEY_COMMITCOMMENTS = "c";
 	private final static String GCM_KEY_MESSAGE = "m";
 
 	private Handler handlerOnUIThread;
@@ -100,11 +85,13 @@ public class GCMIntentService extends GCMBaseIntentService {
 		Log.d(LOG_TAG, String.format("Registered with token %s", regId));
 		handlerOnUIThread.post(new DisplayToast(getString(R.string.new_token)));
 		try {
-			Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+			Editor editor = PreferenceManager.getDefaultSharedPreferences(this)
+					.edit();
 			editor.putString("gcm_token", regId);
 			editor.commit();
 			GCMRegistrar.setRegisteredOnServer(context, true);
-			boolean registrationSuccessful = new RegisterGCMTokenCommand(this, regId).execute();
+			boolean registrationSuccessful = new RegisterGCMTokenCommand(this,
+					regId).execute();
 
 			Log.i(LOG_TAG, String.format(
 					"Registering token on server success: %s",
@@ -172,7 +159,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 
 	/**
 	 * Determine if the current user caused this event...
-	 *
+	 * 
 	 * @param intent
 	 * @return
 	 */
@@ -196,7 +183,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 	/**
 	 * Try to parse the URL of the build from the message to be openend. If
 	 * parsing doesn't succeed return the jenkins base URL.
-	 *
+	 * 
 	 * @param message
 	 *            The message from jenkins
 	 * @return The build url or the jenkins base url from the config.
