@@ -60,6 +60,7 @@ public class ConfigurationActivity extends TrackedPreferenceActivity implements
 	public static final String PREFS_KEY_JENKINS_PROJECTS = "jenkins_projects";
 	public static final String PREFS_KEY_ANALYTICS_OPTOUT = "analytics_opt_out";
 	public static final String PREFS_KEY_LAUNCH_WEBSITE = "launch_website";
+	public static final String PREFS_KEY_OPEN_IN_BROWSER  ="open_in_browser";
 
 	private static final String LOG_TAG = "ConfigurationActivity";
 

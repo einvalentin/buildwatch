@@ -102,6 +102,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 						0L);
 				handlerOnUIThread.post(new DisplayToast(String
 						.format(getString(R.string.fmt_registering_success))));
+				return;
 
 			} else {
 				tracker.trackEvent("gcm", "registration_on_jenkins", "failure",
@@ -116,6 +117,16 @@ public class GCMIntentService extends GCMBaseIntentService {
 							getString(R.string.fmt_registering_failed),
 							e.getMessage())));
 		}
+
+		// If we reach here, registration was not successful. If that is the
+		// case, users probably want to see jenkins messages on the device,
+		// because they don't have connectivity to their jenkins server from the
+		// phone.
+		Editor editor = PreferenceManager.getDefaultSharedPreferences(this)
+				.edit();
+		editor.putBoolean(ConfigurationActivity.PREFS_KEY_OPEN_IN_BROWSER,
+				false);
+		editor.commit();
 	}
 
 	@Override

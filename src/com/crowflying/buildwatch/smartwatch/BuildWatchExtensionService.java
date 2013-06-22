@@ -22,7 +22,9 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat.Builder;
 import android.util.Log;
 
 import com.crowflying.buildwatch.ConfigurationActivity;
@@ -185,15 +187,12 @@ public class BuildWatchExtensionService extends ExtensionService {
 				MainActivity.class);
 		showMessage.putExtra(getString(R.string.extra_message), message);
 
-		android.app.Notification notification = new NotificationCompat.Builder(
+		Builder builder = new NotificationCompat.Builder(
 				getApplicationContext())
 				.setSmallIcon(R.drawable.ic_buildwatch)
 				.setContentTitle(getString(R.string.new_message_from_jenkins))
 				.setWhen(System.currentTimeMillis())
 				.setAutoCancel(true)
-				.setContentIntent(
-						PendingIntent.getActivity(this, 0, openInJenkins,
-								PendingIntent.FLAG_UPDATE_CURRENT))
 				.addAction(
 						R.drawable.jenkins_30x30,
 						getString(R.string.open_in_jenkins),
@@ -203,7 +202,22 @@ public class BuildWatchExtensionService extends ExtensionService {
 						android.R.drawable.ic_menu_info_details,
 						getString(R.string.show_message),
 						PendingIntent.getActivity(this, 0, showMessage,
-								PendingIntent.FLAG_UPDATE_CURRENT)).build();
+								PendingIntent.FLAG_UPDATE_CURRENT));
+		// Configure the default event that happens when you click to
+		// notification according to the open_in_browser setting from the shared
+		// preferences.
+		boolean openInBrowser = PreferenceManager.getDefaultSharedPreferences(
+				this).getBoolean(
+				ConfigurationActivity.PREFS_KEY_OPEN_IN_BROWSER, true);
+		if (openInBrowser) {
+			builder.setContentIntent(PendingIntent.getActivity(this, 0,
+					openInJenkins, PendingIntent.FLAG_UPDATE_CURRENT));
+		} else {
+			builder.setContentIntent(PendingIntent.getActivity(this, 0,
+					showMessage, PendingIntent.FLAG_UPDATE_CURRENT));
+		}
+
+		android.app.Notification notification = builder.build();
 		notificationManager.notify(4711, notification);
 
 	}

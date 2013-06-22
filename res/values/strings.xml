@@ -31,6 +31,8 @@
     <string name="config_jenkins_token_summary">API Token: %1$s</string>
     <string name="config_jenkins_base_url">Base URL</string>
     <string name="config_jenkins_base_url_summary">Connecting to Jenkins @ %1$s.</string>
+    <string name="config_open_in_browser">Open messages in browser.</string>
+    <string name="config_open_in_browser_summary">Choose this if your phone connects to jenkins, disable if not.</string>
     <string name="config_gcm_configuration">Google Cloud Messaging Configuration</string>
     <string name="config_gcm_token">GCM RegID</string>
     <string name="config_gcm_token_summary">GCM token: %1$s</string>

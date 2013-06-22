@@ -16,6 +16,12 @@
             android:title="@string/config_jenkins_token" />
     </PreferenceCategory>
 
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="open_in_browser"
+        android:summary="@string/config_open_in_browser_summary"
+        android:title="@string/config_open_in_browser" />
+
     <!-- GCM -->
     <PreferenceCategory android:title="@string/config_gcm_configuration" >
         <EditTextPreference
