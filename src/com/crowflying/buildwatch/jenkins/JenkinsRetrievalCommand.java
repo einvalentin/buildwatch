@@ -15,10 +15,13 @@ import android.util.Log;
 import android.util.Pair;
 
 import com.crowflying.buildwatch.ConfigurationActivity;
+import com.crowflying.buildwatch.jenkins.CrumbInfo;
+import com.crowflying.buildwatch.jenkins.GetCrumbInfoCommand;
 
 public abstract class JenkinsRetrievalCommand<T> {
 
 	private static final String LOG_TAG = "JenkinsRetrivalTask";
+	private CrumbInfo crumbInfo = null;
 
 	protected final Context context;
 
@@ -45,9 +48,14 @@ public abstract class JenkinsRetrievalCommand<T> {
 	 */
 	protected Response connectToJenkins() throws IOException {
 		URL url = new URL(getUrl());
+		String method = getMethod();
 		Log.d(LOG_TAG, String.format("About to talk to %s", url));
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		connection.setRequestMethod(getMethod());
+
+		if ((crumbInfo == null) && method.equals("POST"))
+			this.crumbInfo = GetCrumbInfoCommand(context).execute();
+
+		connection.setRequestMethod(method);
 		connection.setDoOutput(true);
 		connection.setConnectTimeout(30000);
 
@@ -94,6 +102,8 @@ public abstract class JenkinsRetrievalCommand<T> {
 					Base64.NO_WRAP);
 			headers.add(new Pair<String, String>("Authorization", String
 					.format("Basic %s", encoding)));
+			if ((this.crumbInfo != null) && this.crumbInfo.getCrumbRequired()) {
+				headers.add(this.crumbInfo.getCrumbHeader());
 			Log.d(LOG_TAG, String.format(
 					"Added Authorization Header with (%s) -> %s", auth,
 					encoding));
