@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.util.Scanner;
 
 public class Response {
-	private final int statusCode;
+	public final int statusCode;
 	private final String responseBody;
 
 	/**
@@ -20,6 +20,11 @@ public class Response {
 	public Response(int statusCode, InputStream stream) {
 		this.statusCode = statusCode;
 		this.responseBody = readStream(stream);
+	}
+
+	public Response(int statusCode) {
+		this.statusCode = statusCode;
+		this.responseBody = "";
 	}
 
 	private String readStream(InputStream stream) {
