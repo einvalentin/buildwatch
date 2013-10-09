@@ -79,9 +79,9 @@ public abstract class JenkinsRetrievalCommand<T> {
 						connection.getResponseMessage()));
 		try {
 			resp = new Response(connection.getResponseCode(),
-		                        connection.getInputStream());	
+		                        connection.getInputStream());
 		} catch (IOException ie) {
-			resp = new Response(connection.getResponseCode());	
+			resp = new Response(connection.getResponseCode());
 		}
 		return resp;
 	}
