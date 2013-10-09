@@ -19,6 +19,7 @@ import com.crowflying.buildwatch.ConfigurationActivity;
 public abstract class JenkinsRetrievalCommand<T> {
 
 	private static final String LOG_TAG = "JenkinsRetrivalTask";
+	private CrumbInfo crumbInfo = null;
 
 	protected final Context context;
 
@@ -44,11 +45,18 @@ public abstract class JenkinsRetrievalCommand<T> {
 	 * @return a response to be fed into a parser.
 	 */
 	protected Response connectToJenkins() throws IOException {
+		Response resp;
 		URL url = new URL(getUrl());
+		String method = getMethod();
 		Log.d(LOG_TAG, String.format("About to talk to %s", url));
+
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		connection.setRequestMethod(getMethod());
-		connection.setDoOutput(true);
+		connection.setRequestMethod(method);
+		connection.setDoOutput("POST".equals(method));
+
+		if ((crumbInfo == null) && "POST".equals(method))
+			this.crumbInfo = new GetCrumbInfoCommand(context).execute();
+
 		connection.setConnectTimeout(30000);
 
 		// Add headers.
@@ -69,8 +77,13 @@ public abstract class JenkinsRetrievalCommand<T> {
 				String.format("Got back HTTP %s: %s",
 						connection.getResponseCode(),
 						connection.getResponseMessage()));
-		return new Response(connection.getResponseCode(),
-				connection.getInputStream());
+		try {
+			resp = new Response(connection.getResponseCode(),
+		                        connection.getInputStream());
+		} catch (IOException ie) {
+			resp = new Response(connection.getResponseCode());
+		}
+		return resp;
 	}
 
 	/**
@@ -97,6 +110,13 @@ public abstract class JenkinsRetrievalCommand<T> {
 			Log.d(LOG_TAG, String.format(
 					"Added Authorization Header with (%s) -> %s", auth,
 					encoding));
+			if ((this.crumbInfo != null) && this.crumbInfo.getCrumbRequired()) {
+				headers.add(this.crumbInfo.getCrumbHeader());
+				Log.d(LOG_TAG, String.format(
+						"Added crumb header with (%s) -> %s",
+						this.crumbInfo.getCrumbRequestField(),
+						this.crumbInfo.getCrumb()));
+			}
 		} catch (IOException e) {
 			Log.e(LOG_TAG, "Could not add authorization header", e);
 		}
