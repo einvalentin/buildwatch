@@ -5,18 +5,9 @@ import android.util.Pair;
 public class CrumbInfo {
 	private String crumb;
 	private String crumbRequestField;
-	private boolean crumbRequired;
-
-	public CrumbInfo() {
-		this.crumbRequired = false;
-	}
-
-	public boolean getCrumbRequired() {
-		return this.crumbRequired;
-	}
+	private boolean csrfEnabled = false;
 
 	public void setCrumb(String crumb) {
-		this.crumbRequired = true;
 		this.crumb = crumb;
 	}
 
@@ -25,12 +16,19 @@ public class CrumbInfo {
 	}
 
 	public void setCrumbRequestField(String crumbRequestField) {
-		this.crumbRequired = true;
 		this.crumbRequestField = crumbRequestField;
 	}
 
 	public String getCrumbRequestField() {
 		return this.crumbRequestField;
+	}
+
+	public void setCsrfEnabled(boolean csrfEnabled) {
+		this.csrfEnabled = csrfEnabled;
+	}
+
+	public boolean isCsrfEnabled() {
+		return csrfEnabled;
 	}
 
 	public Pair<String, String> getCrumbHeader() {

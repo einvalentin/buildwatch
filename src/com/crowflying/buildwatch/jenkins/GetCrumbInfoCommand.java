@@ -23,9 +23,10 @@ public class GetCrumbInfoCommand extends JenkinsRetrievalCommand<CrumbInfo> {
 			String crumbRequestField = jsonobj.getString("crumbRequestField");
 			result.setCrumb(crumb);
 			result.setCrumbRequestField(crumbRequestField);
+			result.setCsrfEnabled(true);
 		} catch (JSONException je) {
-			/* Failure simply implies that CSRF protection isn't enabled.
-			 * The CrumbInfo object will simply have .crumbRequired = false */
+			/* Failure simply implies that CSRF protection isn't enabled.*/
+			result.setCsrfEnabled(false);
 		}
 		return result;
 	}

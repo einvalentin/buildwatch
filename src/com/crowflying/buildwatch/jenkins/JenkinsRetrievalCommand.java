@@ -54,8 +54,9 @@ public abstract class JenkinsRetrievalCommand<T> {
 		connection.setRequestMethod(method);
 		connection.setDoOutput("POST".equals(method));
 
-		if ((crumbInfo == null) && "POST".equals(method))
-			this.crumbInfo = new GetCrumbInfoCommand(context).execute();
+		if ((crumbInfo == null) && "POST".equals(method)) {
+			crumbInfo = new GetCrumbInfoCommand(context).execute();
+		}
 
 		connection.setConnectTimeout(30000);
 
@@ -79,7 +80,7 @@ public abstract class JenkinsRetrievalCommand<T> {
 						connection.getResponseMessage()));
 		try {
 			resp = new Response(connection.getResponseCode(),
-		                        connection.getInputStream());
+					connection.getInputStream());
 		} catch (IOException ie) {
 			resp = new Response(connection.getResponseCode());
 		}
@@ -110,7 +111,7 @@ public abstract class JenkinsRetrievalCommand<T> {
 			Log.d(LOG_TAG, String.format(
 					"Added Authorization Header with (%s) -> %s", auth,
 					encoding));
-			if ((this.crumbInfo != null) && this.crumbInfo.getCrumbRequired()) {
+			if ((this.crumbInfo != null) && this.crumbInfo.isCsrfEnabled()) {
 				headers.add(this.crumbInfo.getCrumbHeader());
 				Log.d(LOG_TAG, String.format(
 						"Added crumb header with (%s) -> %s",
