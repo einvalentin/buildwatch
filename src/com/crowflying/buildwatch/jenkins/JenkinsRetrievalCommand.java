@@ -52,9 +52,9 @@ public abstract class JenkinsRetrievalCommand<T> {
 
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		connection.setRequestMethod(method);
-		connection.setDoOutput(method.equals("POST"));
+		connection.setDoOutput("POST".equals(method));
 
-		if ((crumbInfo == null) && method.equals("POST"))
+		if ((crumbInfo == null) && "POST".equals(method))
 			this.crumbInfo = new GetCrumbInfoCommand(context).execute();
 
 		connection.setConnectTimeout(30000);
